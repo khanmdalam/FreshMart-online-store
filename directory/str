@@ -1,0 +1,48 @@
+client/
+├── src/
+│   ├── assets/
+│   │   ├── images/          # Hero banners, grocery placeholders
+│   │   └── icons/           # Custom SVG icons for "Fresh", "Fast Delivery"
+│   ├── components/
+│   │   ├── Layout/          # Navbar, Footer, Sidebar
+│   │   ├── Product/         # ProductCard.jsx, ProductGrid.jsx
+│   │   ├── UI/              # Custom Buttons, Badges (e.g., "20% Off")
+│   │   └── Cart/            # MiniCart.jsx, CartItem.jsx
+│   ├── pages/
+│   │   ├── Home.jsx         # The hero section & popular categories
+│   │   ├── Shop.jsx         # Filtering by category (Fruits, Dairy, etc.)
+│   │   ├── ProductDetail.jsx
+│   │   └── Checkout.jsx
+│   ├── context/
+│   │   ├── CartContext.js   # Manage adding/removing groceries
+│   │   └── AuthContext.js   # User login/signup
+│   ├── hooks/               # useFetchProducts.js
+│   ├── services/            # api.js (Axios instance)
+│   └── App.jsx              # Routes (React Router)
+
+
+
+
+
+
+
+server/
+├── models/
+│   ├── User.js              # Name, Email, Address for delivery
+│   ├── Product.js           # Name, Price, Category, Stock, ImageURL
+│   ├── Category.js          # Fruits, Vegetables, Meat, etc.
+│   └── Order.js             # Items, Total, Delivery Status, Date
+├── routes/
+│   ├── productRoutes.js     # GET /products, GET /products/:category
+│   ├── userRoutes.js        # Auth & Profile
+│   └── orderRoutes.js       # Stripe integration & order history
+├── controllers/
+│   ├── productController.js # Logic to filter by "Freshness" or "Price"
+│   ├── orderController.js   # Logic to decrease stock after purchase
+│   └── authController.js    
+├── middleware/
+│   ├── authMiddleware.js    # Protect checkout routes
+│   └── errorMiddleware.js   # Catch 404s or DB errors
+├── config/
+│   └── db.js                # MongoDB Connection
+└── server.js                # Entry point
