@@ -1,24 +1,24 @@
-client/
-├── src/
-│   ├── assets/
-│   │   ├── images/          # Hero banners, grocery placeholders
-│   │   └── icons/           # Custom SVG icons for "Fresh", "Fast Delivery"
-│   ├── components/
-│   │   ├── Layout/          # Navbar, Footer, Sidebar
-│   │   ├── Product/         # ProductCard.jsx, ProductGrid.jsx
-│   │   ├── UI/              # Custom Buttons, Badges (e.g., "20% Off")
-│   │   └── Cart/            # MiniCart.jsx, CartItem.jsx
-│   ├── pages/
-│   │   ├── Home.jsx         # The hero section & popular categories
-│   │   ├── Shop.jsx         # Filtering by category (Fruits, Dairy, etc.)
-│   │   ├── ProductDetail.jsx
-│   │   └── Checkout.jsx
-│   ├── context/
-│   │   ├── CartContext.js   # Manage adding/removing groceries
-│   │   └── AuthContext.js   # User login/signup
-│   ├── hooks/               # useFetchProducts.js
-│   ├── services/            # api.js (Axios instance)
-│   └── App.jsx              # Routes (React Router)
+// client/
+// ├── src/
+// │   ├── assets/
+// │   │   ├── images/          # Hero banners, grocery placeholders
+// │   │   └── icons/           # Custom SVG icons for "Fresh", "Fast Delivery"
+// │   ├── components/
+// │   │   ├── Layout/          # Navbar, Footer, Sidebar
+// │   │   ├── Product/         # ProductCard.jsx, ProductGrid.jsx
+// │   │   ├── UI/              # Custom Buttons, Badges (e.g., "20% Off")
+// │   │   └── Cart/            # MiniCart.jsx, CartItem.jsx
+// │   ├── pages/
+// │   │   ├── Home.jsx         # The hero section & popular categories
+// │   │   ├── Shop.jsx         # Filtering by category (Fruits, Dairy, etc.)
+// │   │   ├── ProductDetail.jsx
+// │   │   └── Checkout.jsx
+// │   ├── context/
+// │   │   ├── CartContext.js   # Manage adding/removing groceries
+// │   │   └── AuthContext.js   # User login/signup
+// │   ├── hooks/               # useFetchProducts.js
+// │   ├── services/            # api.js (Axios instance)
+// │   └── App.jsx              # Routes (React Router)
 
 
 
@@ -26,23 +26,74 @@ client/
 
 
 
-server/
-├── models/
-│   ├── User.js              # Name, Email, Address for delivery
-│   ├── Product.js           # Name, Price, Category, Stock, ImageURL
-│   ├── Category.js          # Fruits, Vegetables, Meat, etc.
-│   └── Order.js             # Items, Total, Delivery Status, Date
-├── routes/
-│   ├── productRoutes.js     # GET /products, GET /products/:category
-│   ├── userRoutes.js        # Auth & Profile
-│   └── orderRoutes.js       # Stripe integration & order history
-├── controllers/
-│   ├── productController.js # Logic to filter by "Freshness" or "Price"
-│   ├── orderController.js   # Logic to decrease stock after purchase
-│   └── authController.js    
-├── middleware/
-│   ├── authMiddleware.js    # Protect checkout routes
-│   └── errorMiddleware.js   # Catch 404s or DB errors
-├── config/
-│   └── db.js                # MongoDB Connection
-└── server.js                # Entry point
+// server/
+// ├── models/
+// │   ├── User.js              # Name, Email, Address for delivery
+// │   ├── Product.js           # Name, Price, Category, Stock, ImageURL
+// │   ├── Category.js          # Fruits, Vegetables, Meat, etc.
+// │   └── Order.js             # Items, Total, Delivery Status, Date
+// ├── routes/
+// │   ├── productRoutes.js     # GET /products, GET /products/:category
+// │   ├── userRoutes.js        # Auth & Profile
+// │   └── orderRoutes.js       # Stripe integration & order history
+// ├── controllers/
+// │   ├── productController.js # Logic to filter by "Freshness" or "Price"
+// │   ├── orderController.js   # Logic to decrease stock after purchase
+// │   └── authController.js    
+// ├── middleware/
+// │   ├── authMiddleware.js    # Protect checkout routes
+// │   └── errorMiddleware.js   # Catch 404s or DB errors
+// ├── config/
+// │   └── db.js                # MongoDB Connection
+// └── server.js                # Entry point
+
+
+
+// e src/components/Layout/Navbar.jsx
+
+
+
+// import { Link } from 'react-router-dom'
+
+// function Navbar() {
+//   return (
+//     <nav style={{
+//       display: 'flex',
+//       justifyContent: 'space-between',
+//       alignItems: 'center',
+//       padding: '1rem 2rem',
+//       backgroundColor: 'rgb(26, 138, 60)',
+//       color: 'white'
+//     }}>
+      
+//       {/* Logo */}
+//       <Link to="/" style={{ color: 'white', textDecoration: 'none', fontSize: '1.5rem', fontWeight: 'bold' }}>
+//         🛒 Freshmart
+//       </Link>
+
+//       {/* Search Bar */}
+//       <input
+//         type="text"
+//         placeholder="Search for groceries..."
+//         style={{
+//           width: '40%',
+//           padding: '0.5rem 1rem',
+//           borderRadius: '25px',
+//           border: 'none',
+//           outline: 'none',
+//           fontSize: '1rem'
+//         }}
+//       />
+
+//       {/* Nav Links */}
+//       <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+//         <Link to="/shop" style={{ color: 'white', textDecoration: 'none' }}>Shop</Link>
+//         <Link to="/cart" style={{ color: 'white', textDecoration: 'none' }}>🛒 Cart</Link>
+//         <Link to="/login" style={{ color: 'white', textDecoration: 'none' }}>Login</Link>
+//       </div>
+
+//     </nav>
+//   )
+// }
+
+// export default Navbar
