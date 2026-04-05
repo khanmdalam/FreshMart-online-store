@@ -11,6 +11,8 @@ import { useAuth } from './context/useAuth'
 import Dashboard from './Pages/admin/Dashboard'
 import Products from './Pages/admin/product'
 import Orders from './Pages/admin/Order'
+import Shop from  './Pages/Shop'
+import ProductDetail from './Pages/ProductDetail'
 
 
 const AdminRoute = ({ children }) => {
@@ -43,11 +45,14 @@ function App() {
           </AdminRoute>
         } />
 
-<Route path="/admin/orders" element={
-  <AdminRoute>
-    <Orders />
-  </AdminRoute>
-} />
+        <Route path="/admin/orders" element={
+          <AdminRoute>
+            <Orders />
+          </AdminRoute>
+
+        } />
+        <Route path="/shop" element={<Shop />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
       </Routes>
       <Footer />
     </BrowserRouter>

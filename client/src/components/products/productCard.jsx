@@ -1,17 +1,23 @@
 import { useCart } from "../../context/useCart"
+import { useNavigate } from 'react-router-dom'
 
 function ProductCard({ _id, name, price, unit, image }) {
   const { addToCart, cartItems, increaseQty, decreaseQty } = useCart()
+  const navigate = useNavigate()
 
   const cartItem = cartItems.find((item) => item._id === _id)
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e) => {
+    e.stopPropagation()
     addToCart({ _id, name, price, unit, image })
   }
 
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-all border border-gray-100 cursor-pointer group">
-      
+    <div
+      onClick={() => navigate(`/product/${_id}`)}
+      className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-all border border-gray-100 cursor-pointer group"
+    >
+
       {/* Image */}
       <div className="flex items-center justify-center h-32 mb-3">
         <span className="text-6xl group-hover:scale-110 transition-transform">{image}</span>
@@ -31,7 +37,10 @@ function ProductCard({ _id, name, price, unit, image }) {
           + Add to Cart
         </button>
       ) : (
-        <div className="flex items-center justify-between mt-3 bg-green-50 rounded-xl px-3 py-1">
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="flex items-center justify-between mt-3 bg-green-50 rounded-xl px-3 py-1"
+        >
           <button
             onClick={() => decreaseQty(_id)}
             className="text-green-600 font-bold text-lg hover:text-green-800"
