@@ -1,19 +1,21 @@
 const express = require("express");
 const dotenv = require("dotenv");
 dotenv.config();
+const cors = require("cors");
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const productRoutes = require("./routes/productsRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const categoryRoutes = require('./routes/categoryRoutes')
 const paymentRoutes = require("./routes/paymentRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
-const cors = require("cors");
 const { isDatabaseReady } = require("./middleware/dbMiddleware");
 require("./models/category");
 
 const app = express();
 const port = Number(process.env.PORT) || 5000;
 
+// CORS must be first
 app.use(cors({
   origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
   credentials: true
@@ -29,7 +31,8 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
-app.use("/api/order", orderRoutes);
+app.use("/api/orders", orderRoutes);
+app.use('/api/categories', categoryRoutes)
 app.use('/api/payment', paymentRoutes);
 
 app.use(notFound);
