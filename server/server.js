@@ -9,6 +9,7 @@ const paymentRoutes = require("./routes/paymentRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const cors = require("cors");
 const { isDatabaseReady } = require("./middleware/dbMiddleware");
+require("./models/category");
 
 const app = express();
 const port = Number(process.env.PORT) || 5000;

@@ -19,8 +19,17 @@ function ProductCard({ _id, name, price, unit, image }) {
     >
 
       {/* Image */}
-      <div className="flex items-center justify-center h-32 mb-3">
-        <span className="text-6xl group-hover:scale-110 transition-transform">{image}</span>
+      <div className="flex items-center justify-center h-32 mb-3 overflow-hidden rounded-xl">
+        {image && image.startsWith('http') ? (
+          <img
+            src={image}
+            alt={name}
+            className="w-full h-32 object-cover rounded-xl group-hover:scale-110 transition-transform"
+            onError={(e) => e.target.src = 'https://via.placeholder.com/150'}
+          />
+        ) : (
+          <span className="text-6xl group-hover:scale-110 transition-transform">{image}</span>
+        )}
       </div>
 
       {/* Info */}

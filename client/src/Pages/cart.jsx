@@ -30,7 +30,18 @@ function Cart() {
             <div key={item._id} className="bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm border border-gray-100">
               
               {/* Image */}
-              <span className="text-5xl">{item.image}</span>
+              <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+  {item.image && item.image.startsWith('http') ? (
+    <img
+      src={item.image}
+      alt={item.name}
+      className="w-full h-full object-cover"
+      onError={(e) => e.target.src = 'https://via.placeholder.com/64'}
+    />
+  ) : (
+    <span className="text-4xl">{item.image}</span>
+  )}
+</div>
 
               {/* Info */}
               <div className="flex-1">
