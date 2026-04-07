@@ -18,16 +18,16 @@ function Cart() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 px-10 py-8">
+    <div className="min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-10 py-8">
       
       <h1 className="text-3xl font-bold text-gray-800 mb-8">Your Cart 🛒</h1>
 
-      <div className="grid grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Cart Items */}
-        <div className="col-span-2 space-y-4">
+        <div className="lg:col-span-2 space-y-4">
           {cartItems.map((item) => (
-            <div key={item._id} className="bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm border border-gray-100">
+            <div key={item._id} className="bg-white rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-4 shadow-sm border border-gray-100">
               
               {/* Image */}
               <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
@@ -68,7 +68,7 @@ function Cart() {
               </div>
 
               {/* Subtotal */}
-              <p className="font-bold text-gray-800 w-20 text-right">₹{item.price * item.quantity}</p>
+              <p className="font-bold text-gray-800 sm:w-20 sm:text-right">₹{item.price * item.quantity}</p>
 
               {/* Remove */}
               <button

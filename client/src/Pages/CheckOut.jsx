@@ -10,10 +10,10 @@ function Checkout() {
   const navigate = useNavigate()
 
   const [address, setAddress] = useState({
-    street: '',
-    city: '',
-    state: '',
-    pincode: ''
+    street: user?.address?.street || '',
+    city: user?.address?.city || '',
+    state: user?.address?.state || '',
+    pincode: user?.address?.pincode || ''
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -65,11 +65,27 @@ function Checkout() {
             })
 
             if (verifyData.success) {
+              // Step 4 — Save order in database after payment verification
+              await API.post('/orders', {
+                items: cartItems.map((item) => ({
+                  product: item._id,
+                  quantity: item.quantity,
+                  price: item.price,
+                  name: item.name,
+                  image: item.image
+                })),
+                deliveryAddress: address
+              })
+
               clearCart()
               navigate('/order-success')
+            } else {
+              setError('Payment verification failed')
             }
-          } catch {
-            setError('Payment verification failed')
+          } catch (error) {
+            setError(error.response?.data?.message || 'Payment succeeded but order could not be saved')
+          } finally {
+            setLoading(false)
           }
         },
         prefill: {
@@ -86,13 +102,12 @@ function Checkout() {
 
     } catch (error) {
       setError(error.response?.data?.message || 'Something went wrong')
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 px-10 py-8">
+    <div className="min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-10 py-8">
       <h1 className="text-3xl font-bold text-gray-800 mb-8">Checkout</h1>
 
       {cartItems.length === 0 ? (
@@ -106,10 +121,10 @@ function Checkout() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
           {/* Address Form */}
-          <div className="col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <h2 className="text-xl font-bold text-gray-800 mb-6">Delivery Address</h2>
 
             {error && (
@@ -131,7 +146,7 @@ function Checkout() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm text-gray-600 mb-1 block">City</label>
                   <input

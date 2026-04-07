@@ -38,6 +38,30 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  const refreshProfile = async () => {
+    const { data } = await API.get('/users/profile')
+    const mergedUser = {
+      ...(user || {}),
+      ...data,
+      token: user?.token || localStorage.getItem('token'),
+    }
+    setUser(mergedUser)
+    localStorage.setItem('user', JSON.stringify(mergedUser))
+    return mergedUser
+  }
+
+  const updateProfile = async (profileData) => {
+    const { data } = await API.put('/users/profile', profileData)
+    const mergedUser = {
+      ...(user || {}),
+      ...data,
+      token: user?.token || localStorage.getItem('token'),
+    }
+    setUser(mergedUser)
+    localStorage.setItem('user', JSON.stringify(mergedUser))
+    return mergedUser
+  }
+
   const logout = () => {
     setUser(null)
     localStorage.removeItem('user')
@@ -45,7 +69,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, login, register, refreshProfile, updateProfile, logout }}>
       {children}
     </AuthContext.Provider>
   )

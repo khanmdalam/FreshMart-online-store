@@ -1,5 +1,6 @@
 const Order = require("../models/order");
 const Product = require("../models/product");
+const mongoose = require("mongoose");
 
 // CREATE ORDER
 const createOrder = async (req, res) => {
@@ -10,28 +11,51 @@ const createOrder = async (req, res) => {
       return res.status(400).json({ message: "No items in order" });
     }
 
-    // Calculate total and check stock
+    // Calculate total and check stock for DB-backed products.
+    // For non-DB/cart-only items, save item snapshot so order tracking still works.
     let totalAmount = 0;
-    for (let item of items) {
-      const product = await Product.findById(item.product);
-      if (!product) {
-        return res.status(404).json({ message: "Product not found" });
-      }
-      if (product.stock < item.quantity) {
-        return res.status(400).json({ message: `${product.name} is out of stock` });
-      }
-      totalAmount += product.price * item.quantity;
+    const normalizedItems = [];
 
-      // Decrease stock
-      product.stock -= item.quantity;
-      await product.save();
+    for (let item of items) {
+      const quantity = Number(item.quantity) || 1;
+      const clientPrice = Number(item.price) || 0;
+      let savedItem = {
+        quantity,
+        price: clientPrice,
+        productName: item.name || "Product",
+        productImage: item.image || item.imageURL || "",
+      };
+
+      if (item.product && mongoose.Types.ObjectId.isValid(item.product)) {
+        const product = await Product.findById(item.product);
+        if (product) {
+          if (product.stock < quantity) {
+            return res.status(400).json({ message: `${product.name} is out of stock` });
+          }
+
+          product.stock -= quantity;
+          await product.save();
+
+          savedItem = {
+            ...savedItem,
+            product: product._id,
+            productName: product.name,
+            productImage: product.imageURL,
+            price: product.price,
+          };
+        }
+      }
+
+      totalAmount += savedItem.price * quantity;
+      normalizedItems.push(savedItem);
     }
 
     const order = await Order.create({
       user: req.user._id,
-      items,
+      items: normalizedItems,
       totalAmount,
       deliveryAddress,
+      paymentStatus: "paid",
     });
 
     res.status(201).json(order);

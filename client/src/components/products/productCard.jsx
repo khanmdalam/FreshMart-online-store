@@ -1,11 +1,14 @@
 import { useCart } from "../../context/useCart"
+import { useWishlist } from '../../context/useWishlist'
 import { useNavigate } from 'react-router-dom'
 
 function ProductCard({ _id, name, price, unit, image }) {
   const { addToCart, cartItems, increaseQty, decreaseQty } = useCart()
+  const { toggleWishlist, isLoved } = useWishlist()
   const navigate = useNavigate()
 
   const cartItem = cartItems.find((item) => item._id === _id)
+  const loved = isLoved(_id)
 
   const handleAddToCart = (e) => {
     e.stopPropagation()
@@ -14,9 +17,32 @@ function ProductCard({ _id, name, price, unit, image }) {
 
   return (
     <div
-      onClick={() => navigate(`/product/${_id}`)}
+      onClick={() => navigate(`/product/${_id}`, {
+        state: {
+          productSnapshot: {
+            _id,
+            name,
+            price,
+            unit,
+            imageURL: image,
+            description: 'Fresh and quality product from FreshMart.'
+          }
+        }
+      })}
       className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-all border border-gray-100 cursor-pointer group"
     >
+      <div className="flex justify-end">
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            toggleWishlist({ _id, name, price, unit, image })
+          }}
+          className={`text-xl transition-colors ${loved ? 'text-red-500' : 'text-gray-300 hover:text-red-400'}`}
+          aria-label={loved ? 'Remove from loved' : 'Add to loved'}
+        >
+          ♥
+        </button>
+      </div>
 
       {/* Image */}
       <div className="flex items-center justify-center h-32 mb-3 overflow-hidden rounded-xl">

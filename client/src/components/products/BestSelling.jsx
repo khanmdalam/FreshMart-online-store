@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import ProductCard from './productCard'
 
 const tabs = ['Fresh Vegetables', 'Fruits', 'Dairy & Eggs', 'Bakery', 'Meat & Fish', 'Beverages']
@@ -51,14 +52,17 @@ function BestSelling() {
   const [activeTab, setActiveTab] = useState('Fresh Vegetables')
 
   return (
-    <section className="px-10 py-8">
+    <section className="px-4 sm:px-6 lg:px-10 py-8">
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Weekly Best Selling Items</h2>
-        <button className="flex items-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm hover:bg-gray-700">
+        <Link
+          to={`/shop?categoryName=${encodeURIComponent(activeTab)}`}
+          className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm hover:bg-gray-700"
+        >
           Show All
-        </button>
+        </Link>
       </div>
 
       {/* Tabs */}
@@ -79,7 +83,7 @@ function BestSelling() {
       </div>
 
       {/* Products */}
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {productsByTab[activeTab].map((product, index) => (
           <ProductCard key={index} {...product} />
         ))}

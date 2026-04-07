@@ -2,6 +2,22 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+const toUserResponse = (user, token = null) => {
+  const response = {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    address: user.address || {},
+  };
+
+  if (token) {
+    response.token = token;
+  }
+
+  return response;
+};
+
 //REGISTER
 const registerUser = async (req, res) => {
   try {
@@ -33,13 +49,7 @@ const registerUser = async (req, res) => {
       { expiresIn: '30d' }
     );
 
-    res.status(201).json({
-      _id: newUser._id,
-      name: newUser.name,
-      email: newUser.email,
-      role: newUser.role,
-      token,
-    });
+    res.status(201).json(toUserResponse(newUser, token));
 
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -73,17 +83,55 @@ const loginUser = async (req, res) => {
       { expiresIn: "30d" }
     );
 
-    res.status(200).json({
-      _id: foundUser._id,
-      name: foundUser.name,
-      email: foundUser.email,
-      role: foundUser.role,
-      token,
-    });
+    res.status(200).json(toUserResponse(foundUser, token));
 
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-module.exports = { registerUser, loginUser };
+// GET PROFILE
+const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(toUserResponse(user));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// UPDATE PROFILE
+const updateProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const { name, address } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: "Name is required" });
+    }
+
+    user.name = name.trim();
+    user.address = {
+      street: address?.street?.trim() || "",
+      city: address?.city?.trim() || "",
+      state: address?.state?.trim() || "",
+      pincode: address?.pincode?.trim() || "",
+    };
+
+    const updatedUser = await user.save();
+    res.status(200).json(toUserResponse(updatedUser));
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, getProfile, updateProfile };
