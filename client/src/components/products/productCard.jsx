@@ -1,6 +1,7 @@
 import { useCart } from "../../context/useCart"
 import { useWishlist } from '../../context/useWishlist'
 import { useNavigate } from 'react-router-dom'
+import { defaultProductImagePath, resolveProductImage } from '../../utils/productImage'
 
 function ProductCard({ _id, name, price, unit, image }) {
   const { addToCart, cartItems, increaseQty, decreaseQty } = useCart()
@@ -9,10 +10,11 @@ function ProductCard({ _id, name, price, unit, image }) {
 
   const cartItem = cartItems.find((item) => item._id === _id)
   const loved = isLoved(_id)
+  const resolvedImage = resolveProductImage(name, image)
 
   const handleAddToCart = (e) => {
     e.stopPropagation()
-    addToCart({ _id, name, price, unit, image })
+    addToCart({ _id, name, price, unit, image: resolvedImage })
   }
 
   return (
@@ -24,7 +26,7 @@ function ProductCard({ _id, name, price, unit, image }) {
             name,
             price,
             unit,
-            imageURL: image,
+            imageURL: resolvedImage,
             description: 'Fresh and quality product from FreshMart.'
           }
         }
@@ -35,7 +37,7 @@ function ProductCard({ _id, name, price, unit, image }) {
         <button
           onClick={(e) => {
             e.stopPropagation()
-            toggleWishlist({ _id, name, price, unit, image })
+            toggleWishlist({ _id, name, price, unit, image: resolvedImage })
           }}
           className={`text-xl transition-colors ${loved ? 'text-red-500' : 'text-gray-300 hover:text-red-400'}`}
           aria-label={loved ? 'Remove from loved' : 'Add to loved'}
@@ -46,16 +48,12 @@ function ProductCard({ _id, name, price, unit, image }) {
 
       {/* Image */}
       <div className="flex items-center justify-center h-32 mb-3 overflow-hidden rounded-xl">
-        {image && image.startsWith('http') ? (
-          <img
-            src={image}
-            alt={name}
-            className="w-full h-32 object-cover rounded-xl group-hover:scale-110 transition-transform"
-            onError={(e) => e.target.src = 'https://via.placeholder.com/150'}
-          />
-        ) : (
-          <span className="text-6xl group-hover:scale-110 transition-transform">{image}</span>
-        )}
+        <img
+          src={resolvedImage}
+          alt={name}
+          className="w-full h-32 object-cover rounded-xl group-hover:scale-110 transition-transform"
+          onError={(e) => { e.target.src = defaultProductImagePath() }}
+        />
       </div>
 
       {/* Info */}

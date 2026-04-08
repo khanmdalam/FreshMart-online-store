@@ -3,6 +3,7 @@ import { useCart } from '../context/useCart'
 import { useAuth } from '../context/useAuth'
 import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
+import { resolveProductImage } from '../utils/productImage'
 
 function Checkout() {
   const { cartItems, cartTotal, clearCart } = useCart()
@@ -72,7 +73,7 @@ function Checkout() {
                   quantity: item.quantity,
                   price: item.price,
                   name: item.name,
-                  image: item.image
+                  image: resolveProductImage(item.name, item.image)
                 })),
                 deliveryAddress: address
               })

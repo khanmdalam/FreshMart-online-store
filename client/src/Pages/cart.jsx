@@ -1,5 +1,6 @@
 import { useCart } from '../context/useCart'
 import { Link } from 'react-router-dom'
+import { defaultProductImagePath, resolveProductImage } from '../utils/productImage'
 
 function Cart() {
   const { cartItems, removeFromCart, increaseQty, decreaseQty, cartTotal, clearCart } = useCart()
@@ -26,22 +27,20 @@ function Cart() {
         
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-4">
-          {cartItems.map((item) => (
+          {cartItems.map((item) => {
+            const resolvedImage = resolveProductImage(item.name, item.image)
+            return (
             <div key={item._id} className="bg-white rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-4 shadow-sm border border-gray-100">
               
               {/* Image */}
               <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
-  {item.image && item.image.startsWith('http') ? (
-    <img
-      src={item.image}
-      alt={item.name}
-      className="w-full h-full object-cover"
-      onError={(e) => e.target.src = 'https://via.placeholder.com/64'}
-    />
-  ) : (
-    <span className="text-4xl">{item.image}</span>
-  )}
-</div>
+                <img
+                  src={resolvedImage}
+                  alt={item.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => { e.target.src = defaultProductImagePath() }}
+                />
+              </div>
 
               {/* Info */}
               <div className="flex-1">
@@ -79,7 +78,8 @@ function Cart() {
               </button>
 
             </div>
-          ))}
+            )
+          })}
 
           {/* Clear Cart */}
           <button

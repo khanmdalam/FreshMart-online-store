@@ -3,6 +3,7 @@ import { useLocation, useParams } from 'react-router-dom'
 import API from '../services/api'
 import { useCart } from '../context/useCart'
 import { useWishlist } from '../context/useWishlist'
+import { defaultProductImagePath, resolveProductImage } from '../utils/productImage'
 
 function ProductDetail() {
   const { id } = useParams()
@@ -57,6 +58,7 @@ function ProductDetail() {
 
   const cartItem = cartItems.find((item) => item._id === product._id)
   const loved = isLoved(product._id)
+  const resolvedImage = resolveProductImage(product.name, product.imageURL)
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-10 py-8">
@@ -66,16 +68,12 @@ function ProductDetail() {
 
           {/* Image */}
           <div className="flex items-center justify-center bg-gray-50 rounded-2xl p-8">
-            {product.imageURL && String(product.imageURL).startsWith('http') ? (
-              <img
-                src={product.imageURL}
-                alt={product.name}
-                className="w-full max-w-64 h-auto aspect-square object-cover rounded-xl"
-                onError={(e) => e.target.src = 'https://via.placeholder.com/256'}
-              />
-            ) : (
-              <span className="text-7xl">{product.imageURL || '📦'}</span>
-            )}
+            <img
+              src={resolvedImage}
+              alt={product.name}
+              className="w-full max-w-64 h-auto aspect-square object-cover rounded-xl"
+              onError={(e) => { e.target.src = defaultProductImagePath() }}
+            />
           </div>
 
           {/* Details */}
@@ -89,7 +87,7 @@ function ProductDetail() {
                   name: product.name,
                   price: product.price,
                   unit: product.unit || 'per unit',
-                  image: product.imageURL
+                  image: resolvedImage
                 })}
                 className={`text-2xl ${loved ? 'text-red-500' : 'text-gray-300 hover:text-red-400'}`}
                 aria-label={loved ? 'Remove from loved' : 'Add to loved'}
@@ -114,7 +112,7 @@ function ProductDetail() {
 
             {!cartItem ? (
               <button
-                onClick={() => addToCart({ _id: product._id, name: product.name, price: product.price, unit: product.unit || 'per unit', image: product.imageURL })}
+                onClick={() => addToCart({ _id: product._id, name: product.name, price: product.price, unit: product.unit || 'per unit', image: resolvedImage })}
                 className="bg-green-500 hover:bg-green-600 text-white py-3 px-8 rounded-xl font-semibold transition-colors w-fit"
               >
                 + Add to Cart

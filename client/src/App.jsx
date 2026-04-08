@@ -20,6 +20,7 @@ import Wishlist from './Pages/Wishlist'
 import Policy from './Pages/Policy'
 import FAQs from './Pages/FAQs'
 import HelpSupport from './Pages/HelpSupport'
+import About from './Pages/About'
 
 const AdminRoute = ({ children }) => {
   const { user } = useAuth()
@@ -51,6 +52,7 @@ function App() {
         <Route path="/shop" element={<Shop />} />
         <Route path="/deals" element={<Deals />} />
         <Route path="/fresh" element={<FreshProduce />} />
+        <Route path="/about" element={<About />} />
         <Route path="/policy" element={<Policy />} />
         <Route path="/faqs" element={<FAQs />} />
         <Route path="/help" element={<HelpSupport />} />

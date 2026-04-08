@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import API from '../../services/api'
 import { Link } from 'react-router-dom'
+import { defaultProductImagePath } from '../../utils/productImage'
 
 function Products() {
   const [products, setProducts] = useState([])
@@ -262,7 +263,7 @@ function Products() {
                         src={product.imageURL}
                         alt={product.name}
                         className="w-full h-full object-cover"
-                        onError={(e) => e.target.src = 'https://via.placeholder.com/64'}
+                        onError={(e) => { e.target.src = defaultProductImagePath() }}
                       />
                     </div>
                     <div className="flex-1">

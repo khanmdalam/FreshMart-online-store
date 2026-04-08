@@ -1,15 +1,48 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import API from '../../services/api'
+import {
+  defaultProductImagePath,
+  productImageAssetPath,
+  productItemImagePath
+} from '../../utils/productImage'
 
 const fallbackCategories = [
-  { name: 'Fresh Vegetables', emoji: '🥬' },
-  { name: 'Fruits', emoji: '🍎' },
-  { name: 'Dairy & Eggs', emoji: '🥛' },
-  { name: 'Bakery', emoji: '🍞' },
-  { name: 'Meat & Fish', emoji: '🥩' },
-  { name: 'Beverages', emoji: '🧃' },
+  { name: 'Fresh Vegetables', image: productImageAssetPath('vegetables.jpg') },
+  { name: 'Fruits', image: productImageAssetPath('fruits.jpg') },
+  { name: 'Dairy & Eggs', image: productImageAssetPath('dairy.jpg') },
+  { name: 'Bakery', image: productImageAssetPath('bakery.jpg') },
+  { name: 'Meat & Fish', image: productImageAssetPath('meat-fish.jpg') },
+  { name: 'Beverages', image: productImageAssetPath('beverages.jpg') },
 ]
+
+const fallbackCountByCategory = {
+  'freshvegetables': 5,
+  'fruits': 5,
+  'dairyeggs': 5,
+  'bakery': 5,
+  'meatfish': 5,
+  'beverages': 5,
+}
+
+const normalizeCategory = (value) =>
+  String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+
+const isCigaretteCategory = (normalizedName) =>
+  /(cig|ciger|smok)/.test(String(normalizedName || ''))
+
+const categoryImageByNormalizedName = {
+  freshvegetables: productImageAssetPath('vegetables.jpg'),
+  fruits: productImageAssetPath('fruits.jpg'),
+  dairyeggs: productImageAssetPath('dairy.jpg'),
+  bakery: productImageAssetPath('bakery.jpg'),
+  meatfish: productImageAssetPath('meat-fish.jpg'),
+  beverages: productImageAssetPath('beverages.jpg'),
+  cigarette: productItemImagePath('cigeratte.jpg'),
+  cigarettes: productItemImagePath('cigeratte.jpg'),
+  cigeratte: productItemImagePath('cigeratte.jpg'),
+  cigeratee: productItemImagePath('cigeratte.jpg'),
+}
 
 function Categories() {
   const [dbCategories, setDbCategories] = useState([])
@@ -33,34 +66,49 @@ function Categories() {
   }, [])
 
   const categories = useMemo(() => {
-    const productCountByName = products.reduce((acc, product) => {
-      const categoryName = product.category?.name || ''
-      if (!categoryName) return acc
-      acc[categoryName] = (acc[categoryName] || 0) + 1
+    const productCountByNormalizedName = products.reduce((acc, product) => {
+      const normalizedName = normalizeCategory(product.category?.name)
+      if (!normalizedName) return acc
+      acc[normalizedName] = (acc[normalizedName] || 0) + 1
       return acc
     }, {})
 
-    const fallbackMap = new Map(fallbackCategories.map((item) => [item.name.toLowerCase(), item]))
+    const fallbackMap = new Map(
+      fallbackCategories.map((item) => [normalizeCategory(item.name), item])
+    )
 
     const dbMapped = dbCategories.map((cat) => {
-      const fallback = fallbackMap.get(cat.name.toLowerCase())
+      const normalizedName = normalizeCategory(cat.name)
+      const fallback = fallbackMap.get(normalizedName)
+      const dbCount = productCountByNormalizedName[normalizedName] || 0
+      const fallbackCount = fallbackCountByCategory[normalizedName] || 0
+      const mappedCategoryImage = isCigaretteCategory(normalizedName)
+        ? productItemImagePath('cigeratte.jpg')
+        : categoryImageByNormalizedName[normalizedName]
+      const dbCategoryImage = typeof cat.image === 'string' ? cat.image.trim() : ''
+      const forceMapped = isCigaretteCategory(normalizedName)
+      const image = forceMapped
+        ? (mappedCategoryImage || dbCategoryImage || fallback?.image || defaultProductImagePath())
+        : (dbCategoryImage || mappedCategoryImage || fallback?.image || defaultProductImagePath())
+
       return {
         key: cat._id,
         name: cat.name,
-        emoji: fallback?.emoji || '📦',
-        count: productCountByName[cat.name] || 0,
+        image,
+        count: dbCount + fallbackCount,
         to: `/shop?category=${cat._id}`
       }
     })
 
-    const existingNames = new Set(dbMapped.map((item) => item.name.toLowerCase()))
+    const existingNames = new Set(dbMapped.map((item) => normalizeCategory(item.name)))
     const fallbackOnly = fallbackCategories
-      .filter((item) => !existingNames.has(item.name.toLowerCase()))
+      .filter((item) => !existingNames.has(normalizeCategory(item.name)))
       .map((item) => ({
         key: item.name,
         name: item.name,
-        emoji: item.emoji,
-        count: productCountByName[item.name] || 0,
+        image: item.image,
+        count: (productCountByNormalizedName[normalizeCategory(item.name)] || 0) +
+          (fallbackCountByCategory[normalizeCategory(item.name)] || 0),
         to: `/shop?categoryName=${encodeURIComponent(item.name)}`
       }))
 
@@ -88,7 +136,14 @@ function Categories() {
             to={cat.to}
             key={cat.key}
             className="flex flex-col items-center justify-center bg-white rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer hover:-translate-y-1 transition-all border border-gray-100">
-            <div className="text-5xl mb-3">{cat.emoji}</div>
+            <div className="w-16 h-16 rounded-full overflow-hidden mb-3 bg-gray-100">
+              <img
+                src={cat.image}
+                alt={cat.name}
+                className="w-full h-full object-cover"
+                onError={(e) => { e.target.src = defaultProductImagePath() }}
+              />
+            </div>
             <p className="font-semibold text-sm text-gray-800 text-center">{cat.name}</p>
             <p className="text-xs text-gray-400 mt-1">{cat.count} Products</p>
           </Link>

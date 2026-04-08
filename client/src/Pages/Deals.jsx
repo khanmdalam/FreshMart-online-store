@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import API from '../services/api'
+import { resolveProductImage } from '../utils/productImage'
 
 const fallbackDeals = [
   { id: 'fd1', name: 'Fresh Mango', categoryName: 'Fruits', price: 150, image: '🥭', discount: 18 },
@@ -74,7 +75,7 @@ function Deals() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {deals.map((deal) => {
             const discountedPrice = Math.round(deal.price * (1 - deal.discount / 100))
-            const imageIsUrl = typeof deal.image === 'string' && deal.image.startsWith('http')
+            const resolvedImage = resolveProductImage(deal.name, deal.image)
 
             return (
               <div key={deal.id} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
@@ -86,11 +87,7 @@ function Deals() {
                 </div>
 
                 <div className="h-28 rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden mb-3">
-                  {imageIsUrl ? (
-                    <img src={deal.image} alt={deal.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-6xl">{deal.image}</span>
-                  )}
+                  <img src={resolvedImage} alt={deal.name} className="w-full h-full object-cover" />
                 </div>
 
                 <p className="font-semibold text-gray-800 mb-1">{deal.name}</p>

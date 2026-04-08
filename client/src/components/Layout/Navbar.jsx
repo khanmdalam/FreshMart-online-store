@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/useAuth'
 import { useCart } from '../../context/useCart'
@@ -20,6 +20,7 @@ function Navbar() {
   const { lovedCount } = useWishlist()
   const navigate = useNavigate()
   const location = useLocation()
+  const categoryMenuRef = useRef(null)
   const searchFromUrl = new URLSearchParams(location.search).get('q') || ''
   const [categories, setCategories] = useState([])
   const [showCategoryMenu, setShowCategoryMenu] = useState(false)
@@ -35,6 +36,21 @@ function Navbar() {
     }
 
     fetchCategories()
+  }, [])
+
+  useEffect(() => {
+    setShowCategoryMenu(false)
+  }, [location.pathname, location.search])
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (!categoryMenuRef.current?.contains(event.target)) {
+        setShowCategoryMenu(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleOutsideClick)
+    return () => document.removeEventListener('mousedown', handleOutsideClick)
   }, [])
 
   const mergedCategories = useMemo(() => {
@@ -125,14 +141,13 @@ function Navbar() {
       </div>
 
       {/* Bottom Navbar */}
-      <div className="px-4 sm:px-6 lg:px-10 py-2 bg-white border-b border-gray-100 text-sm text-gray-700 overflow-x-auto">
-        <div className="flex items-center justify-between gap-8 min-w-max">
-          <div className="flex items-center gap-4 sm:gap-6 whitespace-nowrap">
+      <div className="px-4 sm:px-6 lg:px-10 py-2 bg-white border-b border-gray-100 text-sm text-gray-700 overflow-visible">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-8">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
           <Link to="/shop" className="hover:text-green-600">Shop</Link>
           <div
+            ref={categoryMenuRef}
             className="relative"
-            onMouseEnter={() => setShowCategoryMenu(true)}
-            onMouseLeave={() => setShowCategoryMenu(false)}
           >
             <button
               type="button"
@@ -143,7 +158,7 @@ function Navbar() {
             </button>
 
             {showCategoryMenu && (
-              <div className="absolute left-0 top-7 w-56 bg-white border border-gray-200 rounded-xl shadow-lg py-2 z-30">
+              <div className="absolute left-0 top-full mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg py-2 z-30">
                 <Link
                   to="/shop"
                   className="block px-4 py-2 hover:bg-gray-50 text-gray-700"
@@ -171,7 +186,7 @@ function Navbar() {
           <Link to="/fresh" className="hover:text-green-600">Fresh Produce</Link>
           <Link to="/about" className="hover:text-green-600">About</Link>
           </div>
-          <div className="flex items-center gap-4 sm:gap-6 whitespace-nowrap">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
           <Link to="/policy" className="hover:text-green-600">Policy</Link>
           <Link to="/faqs" className="hover:text-green-600">FAQs</Link>
           <Link to="/help" className="hover:text-green-600">Help & Support</Link>

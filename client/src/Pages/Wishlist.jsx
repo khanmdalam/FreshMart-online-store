@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useWishlist } from '../context/useWishlist'
 import { useCart } from '../context/useCart'
+import { resolveProductImage } from '../utils/productImage'
 
 function Wishlist() {
   const navigate = useNavigate()
@@ -25,17 +26,15 @@ function Wishlist() {
       <h1 className="text-3xl font-bold text-gray-800 mb-8">Loved Products ❤️</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {wishlistItems.map((item) => (
+        {wishlistItems.map((item) => {
+          const resolvedImage = resolveProductImage(item.name, item.image)
+          return (
           <div key={item._id} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
             <div
               className="h-36 rounded-xl bg-gray-50 mb-3 overflow-hidden flex items-center justify-center cursor-pointer"
               onClick={() => navigate(`/product/${item._id}`)}
             >
-              {item.image && item.image.startsWith('http') ? (
-                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-6xl">{item.image || '📦'}</span>
-              )}
+              <img src={resolvedImage} alt={item.name} className="w-full h-full object-cover" />
             </div>
 
             <p className="font-semibold text-gray-800 mb-1">{item.name}</p>
@@ -56,7 +55,8 @@ function Wishlist() {
               </button>
             </div>
           </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

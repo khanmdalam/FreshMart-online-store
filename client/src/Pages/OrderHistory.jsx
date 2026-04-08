@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import API from '../services/api'
 import { Link } from 'react-router-dom'
+import { defaultProductImagePath, resolveProductImage } from '../utils/productImage'
 
 function OrderHistory() {
   const [orders, setOrders] = useState([])
@@ -75,23 +76,12 @@ function OrderHistory() {
                 {order.items.map((item, index) => (
                   <div key={index} className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-50 flex-shrink-0">
-                      {item.product?.imageURL ? (
-                        <img
-                          src={item.product.imageURL}
-                          alt={item.product.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => e.target.src = 'https://via.placeholder.com/48'}
-                        />
-                      ) : item.productImage ? (
-                        <img
-                          src={item.productImage}
-                          alt={item.productName || 'Product'}
-                          className="w-full h-full object-cover"
-                          onError={(e) => e.target.src = 'https://via.placeholder.com/48'}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-300">📦</div>
-                      )}
+                      <img
+                        src={resolveProductImage(item.product?.name || item.productName, item.product?.imageURL || item.productImage)}
+                        alt={item.product?.name || item.productName || 'Product'}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { e.target.src = defaultProductImagePath() }}
+                      />
                     </div>
                     <div className="flex-1">
                       <p className="font-medium text-gray-800 text-sm">{item.product?.name || item.productName || 'Product'}</p>
