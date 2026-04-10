@@ -8,12 +8,12 @@ import {
 } from '../../utils/productImage'
 
 const fallbackCategories = [
-  { name: 'Fresh Vegetables', image: productImageAssetPath('vegetables.jpg') },
-  { name: 'Fruits', image: productImageAssetPath('fruits.jpg') },
-  { name: 'Dairy & Eggs', image: productImageAssetPath('dairy.jpg') },
-  { name: 'Bakery', image: productImageAssetPath('bakery.jpg') },
-  { name: 'Meat & Fish', image: productImageAssetPath('meat-fish.jpg') },
-  { name: 'Beverages', image: productImageAssetPath('beverages.jpg') },
+  { name: 'Fresh Vegetables', image: productImageAssetPath('vegetables.webp') },
+  { name: 'Fruits', image: productImageAssetPath('fruits.webp') },
+  { name: 'Dairy & Eggs', image: productImageAssetPath('dairy.webp') },
+  { name: 'Bakery', image: productImageAssetPath('bakery.webp') },
+  { name: 'Meat & Fish', image: productImageAssetPath('meat-fish.webp') },
+  { name: 'Beverages', image: productImageAssetPath('beverages.webp') },
 ]
 
 const fallbackCountByCategory = {
@@ -32,16 +32,16 @@ const isCigaretteCategory = (normalizedName) =>
   /(cig|ciger|smok)/.test(String(normalizedName || ''))
 
 const categoryImageByNormalizedName = {
-  freshvegetables: productImageAssetPath('vegetables.jpg'),
-  fruits: productImageAssetPath('fruits.jpg'),
-  dairyeggs: productImageAssetPath('dairy.jpg'),
-  bakery: productImageAssetPath('bakery.jpg'),
-  meatfish: productImageAssetPath('meat-fish.jpg'),
-  beverages: productImageAssetPath('beverages.jpg'),
-  cigarette: productItemImagePath('cigeratte.jpg'),
-  cigarettes: productItemImagePath('cigeratte.jpg'),
-  cigeratte: productItemImagePath('cigeratte.jpg'),
-  cigeratee: productItemImagePath('cigeratte.jpg'),
+  freshvegetables: productImageAssetPath('vegetables.webp'),
+  fruits: productImageAssetPath('fruits.webp'),
+  dairyeggs: productImageAssetPath('dairy.webp'),
+  bakery: productImageAssetPath('bakery.webp'),
+  meatfish: productImageAssetPath('meat-fish.webp'),
+  beverages: productImageAssetPath('beverages.webp'),
+  cigarette: productItemImagePath('cigeratte.webp'),
+  cigarettes: productItemImagePath('cigeratte.webp'),
+  cigeratte: productItemImagePath('cigeratte.webp'),
+  cigeratee: productItemImagePath('cigeratte.webp'),
 }
 
 function Categories() {
@@ -83,7 +83,7 @@ function Categories() {
       const dbCount = productCountByNormalizedName[normalizedName] || 0
       const fallbackCount = fallbackCountByCategory[normalizedName] || 0
       const mappedCategoryImage = isCigaretteCategory(normalizedName)
-        ? productItemImagePath('cigeratte.jpg')
+        ? productItemImagePath('cigeratte.webp')
         : categoryImageByNormalizedName[normalizedName]
       const dbCategoryImage = typeof cat.image === 'string' ? cat.image.trim() : ''
       const forceMapped = isCigaretteCategory(normalizedName)
@@ -141,6 +141,8 @@ function Categories() {
                 src={cat.image}
                 alt={cat.name}
                 className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
                 onError={(e) => { e.target.src = defaultProductImagePath() }}
               />
             </div>

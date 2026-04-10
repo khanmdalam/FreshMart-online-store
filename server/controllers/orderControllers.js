@@ -55,6 +55,9 @@ const createOrder = async (req, res) => {
       items: normalizedItems,
       totalAmount,
       deliveryAddress,
+      statusTimeline: [
+        { status: "pending", changedAt: new Date() }
+      ],
       paymentStatus: "paid",
     });
 
@@ -95,7 +98,21 @@ const updateOrderStatus = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    order.status = req.body.status;
+    const nextStatus = String(req.body.status || "").toLowerCase();
+    const allowedStatuses = ["pending", "processing", "shipped", "delivered", "cancelled"];
+    if (!allowedStatuses.includes(nextStatus)) {
+      return res.status(400).json({ message: "Invalid order status" });
+    }
+
+    if (!Array.isArray(order.statusTimeline)) {
+      order.statusTimeline = [];
+    }
+
+    if (!order.statusTimeline.some((entry) => entry.status === nextStatus)) {
+      order.statusTimeline.push({ status: nextStatus, changedAt: new Date() });
+    }
+
+    order.status = nextStatus;
     await order.save();
 
     res.status(200).json(order);

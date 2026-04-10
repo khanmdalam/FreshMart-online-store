@@ -263,6 +263,8 @@ function Products() {
                         src={product.imageURL}
                         alt={product.name}
                         className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
                         onError={(e) => { e.target.src = defaultProductImagePath() }}
                       />
                     </div>

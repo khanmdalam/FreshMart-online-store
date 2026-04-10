@@ -29,6 +29,44 @@ function OrderHistory() {
     cancelled: 'bg-red-100 text-red-700'
   }
 
+  const trackingSteps = ['pending', 'processing', 'shipped', 'delivered']
+
+  const statusLabel = (status) => status.charAt(0).toUpperCase() + status.slice(1)
+
+  const formatTimestamp = (value) => {
+    if (!value) return ''
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return ''
+    return date.toLocaleString('en-IN', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+
+  const getTimelineMap = (order) => {
+    const map = {}
+    const timeline = Array.isArray(order.statusTimeline) ? order.statusTimeline : []
+
+    timeline.forEach((entry) => {
+      if (entry?.status && entry?.changedAt && !map[entry.status]) {
+        map[entry.status] = entry.changedAt
+      }
+    })
+
+    if (!map.pending && order.createdAt) {
+      map.pending = order.createdAt
+    }
+
+    if (!map[order.status] && order.updatedAt && order.status !== 'cancelled') {
+      map[order.status] = order.updatedAt
+    }
+
+    return map
+  }
+
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
       <p className="text-gray-400">Loading orders...</p>
@@ -52,6 +90,11 @@ function OrderHistory() {
         <div className="space-y-4">
           {orders.map((order) => (
             <div key={order._id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+              {(() => {
+                const timelineMap = getTimelineMap(order)
+                const currentStepIndex = trackingSteps.indexOf(order.status)
+                return (
+                  <>
 
               {/* Order Header */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 pb-4 border-b border-gray-100">
@@ -65,10 +108,41 @@ function OrderHistory() {
                 </div>
                 <div className="flex items-center gap-3 sm:gap-4">
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusColors[order.status]}`}>
-                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                    {statusLabel(order.status)}
                   </span>
                   <p className="font-bold text-green-600 text-lg">₹{order.totalAmount}</p>
                 </div>
+              </div>
+
+              <div className="mb-5">
+                <p className="text-sm font-medium text-gray-700 mb-3">Order Tracking</p>
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                  {trackingSteps.map((step, index) => {
+                    const completed = Boolean(timelineMap[step]) || (currentStepIndex >= index && currentStepIndex !== -1)
+                    const timestamp = formatTimestamp(timelineMap[step])
+
+                    return (
+                      <div
+                        key={step}
+                        className={`rounded-xl border px-3 py-3 ${
+                          completed ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'
+                        }`}
+                      >
+                        <p className={`text-xs font-semibold ${completed ? 'text-green-700' : 'text-gray-500'}`}>
+                          {statusLabel(step)}
+                        </p>
+                        <p className="text-[11px] text-gray-500 mt-1">
+                          {timestamp || 'Pending'}
+                        </p>
+                      </div>
+                    )
+                  })}
+                </div>
+                {order.status === 'cancelled' && (
+                  <p className="text-xs text-red-500 mt-2">
+                    Cancelled on {formatTimestamp(order.updatedAt) || 'N/A'}
+                  </p>
+                )}
               </div>
 
               {/* Order Items */}
@@ -80,6 +154,8 @@ function OrderHistory() {
                         src={resolveProductImage(item.product?.name || item.productName, item.product?.imageURL || item.productImage)}
                         alt={item.product?.name || item.productName || 'Product'}
                         className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
                         onError={(e) => { e.target.src = defaultProductImagePath() }}
                       />
                     </div>
@@ -99,6 +175,9 @@ function OrderHistory() {
                   <p>{order.deliveryAddress.street}, {order.deliveryAddress.city}, {order.deliveryAddress.state} - {order.deliveryAddress.pincode}</p>
                 </div>
               )}
+                  </>
+                )
+              })()}
 
             </div>
           ))}

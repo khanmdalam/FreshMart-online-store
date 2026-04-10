@@ -54,7 +54,7 @@ function FreshProduce() {
       _id: p._id,
       name: p.name,
       price: p.price,
-      unit: p.unit || 'per unit',
+      unit: p.unit || 'per kg',
       image: p.imageURL
     }))
 
@@ -62,7 +62,7 @@ function FreshProduce() {
       _id: p._id,
       name: p.name,
       price: p.price,
-      unit: p.unit || 'per unit',
+      unit: p.unit || 'per kg',
       image: p.imageURL
     }))
 
@@ -81,12 +81,15 @@ function FreshProduce() {
   return (
     <div className="min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-10 py-8">
       <div
-        className="rounded-2xl p-8 mb-8 text-white"
+        className="relative rounded-2xl p-8 mb-8 text-white overflow-hidden"
         style={{ background: 'linear-gradient(135deg, #22723a 0%, #0d5c28 100%)' }}
       >
-        <p className="text-sm font-medium mb-2 opacity-90">Farm To Door</p>
-        <h1 className="text-3xl font-bold mb-2">Fresh Produce</h1>
-        <p className="text-sm opacity-90">Handpicked fruits and vegetables delivered fresh every day.</p>
+        <div className="absolute inset-0 bg-black/20" aria-hidden="true" />
+        <div className="relative z-10">
+          <p className="text-sm font-semibold mb-2 text-green-50">Farm To Door</p>
+          <h1 className="text-3xl font-bold mb-2 text-white">Fresh Produce</h1>
+          <p className="text-sm text-green-50">Handpicked fruits and vegetables delivered fresh every day.</p>
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
@@ -133,6 +136,7 @@ function FreshProduce() {
               price={product.price}
               unit={product.unit}
               image={product.image}
+              categoryName={activeTab === 'vegetables' ? 'Fresh Vegetables' : 'Fruits'}
             />
           ))}
         </div>

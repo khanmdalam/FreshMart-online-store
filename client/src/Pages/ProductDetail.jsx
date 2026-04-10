@@ -13,6 +13,7 @@ function ProductDetail() {
   const { addToCart, cartItems, increaseQty, decreaseQty } = useCart()
   const { toggleWishlist, isLoved } = useWishlist()
   const isMongoId = /^[a-fA-F0-9]{24}$/.test(String(id || ''))
+  const dealOffer = location.state?.dealOffer
 
   useEffect(() => {
     const snapshot = location.state?.productSnapshot
@@ -59,6 +60,8 @@ function ProductDetail() {
   const cartItem = cartItems.find((item) => item._id === product._id)
   const loved = isLoved(product._id)
   const resolvedImage = resolveProductImage(product.name, product.imageURL)
+  const hasDeal = Boolean(dealOffer?.discountedPrice)
+  const effectivePrice = hasDeal ? Number(dealOffer.discountedPrice) : Number(product.price)
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-10 py-8">
@@ -72,6 +75,9 @@ function ProductDetail() {
               src={resolvedImage}
               alt={product.name}
               className="w-full max-w-64 h-auto aspect-square object-cover rounded-xl"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
               onError={(e) => { e.target.src = defaultProductImagePath() }}
             />
           </div>
@@ -98,7 +104,15 @@ function ProductDetail() {
             <p className="text-gray-500 mb-4">{product.description}</p>
 
             <div className="flex items-center gap-4 mb-6">
-              <p className="text-3xl font-bold text-green-600">₹{product.price}</p>
+              <p className="text-3xl font-bold text-green-600">₹{effectivePrice}</p>
+              {hasDeal && (
+                <>
+                  <span className="text-gray-400 text-lg line-through">₹{product.price}</span>
+                  <span className="text-xs px-2 py-1 rounded-full bg-red-50 text-red-600 font-semibold">
+                    {dealOffer.discount}% OFF
+                  </span>
+                </>
+              )}
               <span className="text-gray-400 text-sm">{product.unit || 'per unit'}</span>
             </div>
 
@@ -112,7 +126,15 @@ function ProductDetail() {
 
             {!cartItem ? (
               <button
-                onClick={() => addToCart({ _id: product._id, name: product.name, price: product.price, unit: product.unit || 'per unit', image: resolvedImage })}
+                onClick={() =>
+                  addToCart({
+                    _id: product._id,
+                    name: product.name,
+                    price: effectivePrice,
+                    unit: product.unit || 'per unit',
+                    image: resolvedImage
+                  })
+                }
                 className="bg-green-500 hover:bg-green-600 text-white py-3 px-8 rounded-xl font-semibold transition-colors w-fit"
               >
                 + Add to Cart
@@ -122,6 +144,7 @@ function ProductDetail() {
                 <button
                   onClick={() => decreaseQty(product._id)}
                   className="text-green-600 font-bold text-xl hover:text-green-800"
+                  aria-label={`Decrease quantity for ${product.name}`}
                 >
                   −
                 </button>
@@ -129,6 +152,7 @@ function ProductDetail() {
                 <button
                   onClick={() => increaseQty(product._id)}
                   className="text-green-600 font-bold text-xl hover:text-green-800"
+                  aria-label={`Increase quantity for ${product.name}`}
                 >
                   +
                 </button>

@@ -34,7 +34,7 @@ function Wishlist() {
               className="h-36 rounded-xl bg-gray-50 mb-3 overflow-hidden flex items-center justify-center cursor-pointer"
               onClick={() => navigate(`/product/${item._id}`)}
             >
-              <img src={resolvedImage} alt={item.name} className="w-full h-full object-cover" />
+              <img src={resolvedImage} alt={item.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
             </div>
 
             <p className="font-semibold text-gray-800 mb-1">{item.name}</p>

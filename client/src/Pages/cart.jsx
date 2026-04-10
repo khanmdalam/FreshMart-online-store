@@ -38,6 +38,8 @@ function Cart() {
                   src={resolvedImage}
                   alt={item.name}
                   className="w-full h-full object-cover"
+                  loading="lazy"
+                  decoding="async"
                   onError={(e) => { e.target.src = defaultProductImagePath() }}
                 />
               </div>
@@ -54,6 +56,7 @@ function Cart() {
                 <button
                   onClick={() => decreaseQty(item._id)}
                   className="text-green-600 font-bold text-lg hover:text-green-800"
+                  aria-label={`Decrease quantity for ${item.name}`}
                 >
                   −
                 </button>
@@ -61,6 +64,7 @@ function Cart() {
                 <button
                   onClick={() => increaseQty(item._id)}
                   className="text-green-600 font-bold text-lg hover:text-green-800"
+                  aria-label={`Increase quantity for ${item.name}`}
                 >
                   +
                 </button>
@@ -73,6 +77,7 @@ function Cart() {
               <button
                 onClick={() => removeFromCart(item._id)}
                 className="text-red-400 hover:text-red-600 text-xl ml-2"
+                aria-label={`Remove ${item.name} from cart`}
               >
                 ✕
               </button>

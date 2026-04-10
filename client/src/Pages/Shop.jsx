@@ -67,9 +67,38 @@ function Shop() {
   const [sortBy, setSortBy] = useState('default')
   const [search, setSearch] = useState(searchParams.get('q') || '')
   const [loading, setLoading] = useState(true)
+  const [selectedMaxPrice, setSelectedMaxPrice] = useState(1000)
 
   const normalizeCategory = (value) =>
     String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+
+  const staticCatalog = useMemo(
+    () =>
+      Object.entries(staticProductsByCategory).flatMap(([categoryName, items]) =>
+        items.map((item) => ({
+          ...item,
+          _id: `static-${categoryName}-${item._id}`,
+          category: { name: categoryName, _id: 'static' },
+          createdAt: '2000-01-01T00:00:00.000Z'
+        }))
+      ),
+    []
+  )
+
+  const priceBounds = useMemo(() => {
+    const prices = [...products, ...staticCatalog]
+      .map((p) => Number(p.price))
+      .filter((p) => !Number.isNaN(p))
+
+    if (prices.length === 0) {
+      return { min: 0, max: 1000 }
+    }
+
+    return {
+      min: Math.floor(Math.min(...prices)),
+      max: Math.ceil(Math.max(...prices))
+    }
+  }, [products, staticCatalog])
 
   const fetchProducts = async () => {
     try {
@@ -94,19 +123,28 @@ function Shop() {
   }, [searchParams])
 
   useEffect(() => {
+    setSelectedMaxPrice(priceBounds.max)
+  }, [priceBounds.max])
+
+  useEffect(() => {
     let result = [...products]
-    const staticCatalog = Object.entries(staticProductsByCategory).flatMap(([categoryName, items]) =>
-      items.map((item) => ({
-        ...item,
-        _id: `static-${categoryName}-${item._id}`,
-        category: { name: categoryName, _id: 'static' },
-        createdAt: '2000-01-01T00:00:00.000Z'
-      }))
-    )
 
     // Filter by selected category
     if (activeCategory !== 'all') {
       result = result.filter((p) => p.category?._id === activeCategory)
+
+      const selectedCategoryName = categories.find((cat) => cat._id === activeCategory)?.name || ''
+      const staticFallback = Object.entries(staticProductsByCategory)
+        .find(([name]) => normalizeCategory(name) === normalizeCategory(selectedCategoryName))?.[1] || []
+
+      const staticProducts = staticFallback.map((item) => ({
+        ...item,
+        _id: `static-${selectedCategoryName}-${item._id}`,
+        category: { name: selectedCategoryName, _id: 'static' },
+        createdAt: '2000-01-01T00:00:00.000Z'
+      }))
+
+      result = [...result, ...staticProducts]
     } else if (activeCategoryName) {
       result = result.filter((p) => {
         const categoryName = p.category?.name || ''
@@ -141,6 +179,13 @@ function Shop() {
       )
     }
 
+    // Filter by selected price range
+    result = result.filter((p) => {
+      const value = Number(p.price)
+      if (Number.isNaN(value)) return false
+      return value <= selectedMaxPrice
+    })
+
     // Sort
     if (sortBy === 'price-low') {
       result.sort((a, b) => a.price - b.price)
@@ -159,7 +204,7 @@ function Shop() {
     })
 
     setFiltered(result)
-  }, [products, activeCategory, activeCategoryName, sortBy, search])
+  }, [products, categories, staticCatalog, activeCategory, activeCategoryName, sortBy, search, selectedMaxPrice])
 
   const fetchCategories = async () => {
     try {
@@ -234,6 +279,31 @@ function Shop() {
     return [...dbCategories, ...homepageOnlyCategories]
   }, [categories])
 
+  const activeCategoryLabel = useMemo(() => {
+    if (activeCategory !== 'all') {
+      return mergedCategories.find((cat) => cat.type === 'id' && cat.value === activeCategory)?.label || ''
+    }
+
+    return activeCategoryName || ''
+  }, [activeCategory, activeCategoryName, mergedCategories])
+
+  const isCustomPriceRange = selectedMaxPrice < priceBounds.max
+
+  const activeFilters = [
+    search.trim() ? `Search: ${search.trim()}` : null,
+    activeCategoryLabel ? `Category: ${activeCategoryLabel}` : null,
+    isCustomPriceRange ? `Price: Up to ₹${selectedMaxPrice}` : null
+  ].filter(Boolean)
+
+  const clearAllFilters = () => {
+    setSearch('')
+    setSortBy('default')
+    setActiveCategory('all')
+    setActiveCategoryName('')
+    setSelectedMaxPrice(priceBounds.max)
+    setSearchParams({}, { replace: true })
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
 
@@ -241,32 +311,75 @@ function Shop() {
       <div className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-10 py-6">
         <h1 className="text-3xl font-bold text-gray-800 mb-4">Shop All Products</h1>
 
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="flex flex-col lg:flex-row lg:items-end gap-4">
           {/* Search */}
-          <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 gap-2 w-full sm:w-80">
-            <span className="text-gray-400">🔍</span>
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={search}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              className="bg-transparent outline-none text-sm w-full"
-            />
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
+            <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 gap-2 w-full sm:w-80">
+              <span className="text-gray-400">🔍</span>
+              <input
+                type="text"
+                aria-label="Search products"
+                placeholder="Search products..."
+                value={search}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="bg-transparent outline-none text-sm w-full"
+              />
+            </div>
+
+            {/* Sort */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-green-400"
+            >
+              <option value="default">Sort By</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+            </select>
           </div>
 
-          {/* Sort */}
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-green-400"
+          <button
+            onClick={clearAllFilters}
+            className="w-full lg:w-auto border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
           >
-            <option value="default">Sort By</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
-          </select>
+            Clear Filters
+          </button>
         </div>
-      </div>
 
+        <div className="mt-4 p-4 rounded-2xl border border-gray-200 bg-gray-50">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-semibold text-gray-700">Price</p>
+            <p className="text-sm text-gray-500">Up to ₹{selectedMaxPrice}</p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-gray-400">₹{priceBounds.min}</span>
+            <input
+              type="range"
+              min={priceBounds.min}
+              max={priceBounds.max}
+              value={selectedMaxPrice}
+              onChange={(e) => setSelectedMaxPrice(Number(e.target.value))}
+              className="w-full accent-green-600"
+            />
+            <span className="text-xs text-gray-400">₹{priceBounds.max}</span>
+          </div>
+        </div>
+
+        {activeFilters.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {activeFilters.map((filterItem) => (
+              <span
+                key={filterItem}
+                className="inline-flex items-center px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs border border-green-200"
+              >
+                {filterItem}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+      
       <div className="flex flex-col lg:flex-row">
 
         {/* Sidebar Categories */}
@@ -315,16 +428,22 @@ function Shop() {
             <>
               <p className="text-gray-400 text-sm mb-4">{filtered.length} products found</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {filtered.map((product) => (
+                {filtered.map((product) => {
+                  const categoryName = String(product.category?.name || '').toLowerCase()
+                  const isProduce = categoryName.includes('fruit') || categoryName.includes('vegetable')
+                  const unit = product.unit || (isProduce ? 'per kg' : 'per unit')
+                  return (
                   <ProductCard
                     key={product._id}
                     _id={product._id}
                     name={product.name}
                     price={product.price}
-                    unit={product.unit || 'per unit'}
+                    unit={unit}
                     image={product.imageURL}
+                    categoryName={product.category?.name}
                   />
-                ))}
+                  )
+                })}
               </div>
             </>
           )}

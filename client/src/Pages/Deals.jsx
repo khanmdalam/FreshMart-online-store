@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import API from '../services/api'
 import { resolveProductImage } from '../utils/productImage'
+import { useCart } from '../context/useCart'
 
 const fallbackDeals = [
   { id: 'fd1', name: 'Fresh Mango', categoryName: 'Fruits', price: 150, image: '🥭', discount: 18 },
@@ -15,6 +16,7 @@ const fallbackDeals = [
 function Deals() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
+  const { addToCart, cartItems, increaseQty, decreaseQty } = useCart()
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -38,6 +40,7 @@ function Deals() {
         name: product.name,
         categoryName: product.category?.name || 'General',
         price: product.price,
+        unit: product.unit || 'per unit',
         image: product.imageURL,
         discount,
         source: 'db'
@@ -56,10 +59,13 @@ function Deals() {
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-10 py-8">
-      <div className="rounded-2xl p-8 mb-8 text-white bg-gradient-to-r from-red-500 via-orange-500 to-amber-500">
-        <p className="text-sm font-medium mb-2 opacity-90">Limited Time</p>
-        <h1 className="text-3xl font-bold mb-2">FreshMart Mega Deals</h1>
-        <p className="text-sm opacity-90">Save big on daily essentials, fresh produce, and pantry must-haves.</p>
+      <div className="relative rounded-2xl p-8 mb-8 text-white bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 overflow-hidden">
+        <div className="absolute inset-0 bg-black/20" aria-hidden="true" />
+        <div className="relative z-10">
+          <p className="text-sm font-semibold mb-2 text-orange-50">Limited Time</p>
+          <h1 className="text-3xl font-bold mb-2 text-white">FreshMart Mega Deals</h1>
+          <p className="text-sm text-orange-50">Save big on daily essentials, fresh produce, and pantry must-haves.</p>
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
@@ -76,6 +82,7 @@ function Deals() {
           {deals.map((deal) => {
             const discountedPrice = Math.round(deal.price * (1 - deal.discount / 100))
             const resolvedImage = resolveProductImage(deal.name, deal.image)
+            const cartItem = cartItems.find((item) => item._id === deal.id)
 
             return (
               <div key={deal.id} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
@@ -87,7 +94,7 @@ function Deals() {
                 </div>
 
                 <div className="h-28 rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden mb-3">
-                  <img src={resolvedImage} alt={deal.name} className="w-full h-full object-cover" />
+                  <img src={resolvedImage} alt={deal.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                 </div>
 
                 <p className="font-semibold text-gray-800 mb-1">{deal.name}</p>
@@ -96,21 +103,45 @@ function Deals() {
                   <p className="text-gray-400 text-sm line-through">₹{deal.price}</p>
                 </div>
 
-                {deal.source === 'db' ? (
-                  <Link
-                    to={`/product/${deal.id}`}
-                    className="w-full block text-center bg-green-500 hover:bg-green-600 text-white py-2 rounded-xl text-sm font-medium"
-                  >
-                    View Deal
-                  </Link>
-                ) : (
-                  <Link
-                    to={`/shop?categoryName=${encodeURIComponent(deal.categoryName)}`}
-                    className="w-full block text-center bg-green-500 hover:bg-green-600 text-white py-2 rounded-xl text-sm font-medium"
-                  >
-                    Explore Category
-                  </Link>
-                )}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  {!cartItem ? (
+                    <button
+                      onClick={() => addToCart({
+                        _id: deal.id,
+                        name: deal.name,
+                        price: discountedPrice,
+                        unit: deal.unit || 'per unit',
+                        image: resolvedImage
+                      })}
+                      className="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-xl text-sm font-medium"
+                    >
+                      Add Deal to Cart
+                    </button>
+                  ) : (
+                    <div className="w-full flex items-center justify-between bg-green-50 rounded-xl px-3 py-2">
+                      <button aria-label={`Decrease quantity for ${deal.name}`} onClick={() => decreaseQty(deal.id)} className="text-green-600 font-bold text-lg">−</button>
+                      <span className="text-green-700 font-semibold">{cartItem.quantity}</span>
+                      <button aria-label={`Increase quantity for ${deal.name}`} onClick={() => increaseQty(deal.id)} className="text-green-600 font-bold text-lg">+</button>
+                    </div>
+                  )}
+
+                  {deal.source === 'db' ? (
+                    <Link
+                      to={`/product/${deal.id}`}
+                      state={{ dealOffer: { discount: deal.discount, discountedPrice } }}
+                      className="w-full block text-center bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-xl text-sm font-medium"
+                    >
+                      View Deal
+                    </Link>
+                  ) : (
+                    <Link
+                      to={`/shop?categoryName=${encodeURIComponent(deal.categoryName)}`}
+                      className="w-full block text-center bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-xl text-sm font-medium"
+                    >
+                      Explore Category
+                    </Link>
+                  )}
+                </div>
               </div>
             )
           })}

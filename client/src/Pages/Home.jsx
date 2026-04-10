@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import API from '../services/api'
 import Hero from '../components/Hero'
-import Categories from '../components/products/Categories'
-import FreshPicks from '../components/products/freshPicks'
-import BestSelling from '../components/products/BestSelling'
 import ProductCard from '../components/products/productCard'
+
+const Categories = lazy(() => import('../components/products/Categories'))
+const FreshPicks = lazy(() => import('../components/products/freshPicks'))
+const BestSelling = lazy(() => import('../components/products/BestSelling'))
 
 function Home() {
   const [searchParams] = useSearchParams()
@@ -42,9 +43,11 @@ function Home() {
   return (
     <div className="bg-gray-50 min-h-screen">
       <Hero />
-      <Categories />
-      <FreshPicks />
-      <BestSelling />
+      <Suspense fallback={<div className="px-4 sm:px-6 lg:px-10 py-6 text-sm text-gray-400">Loading sections...</div>}>
+        <Categories />
+        <FreshPicks />
+        <BestSelling />
+      </Suspense>
 
       <section className="px-4 sm:px-6 lg:px-10 py-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
@@ -73,16 +76,22 @@ function Home() {
               {query ? `${visibleProducts.length} products found` : 'Newest products from admin dashboard'}
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {visibleProducts.map((product) => (
+              {visibleProducts.map((product) => {
+                const categoryName = String(product.category?.name || '').toLowerCase()
+                const isProduce = categoryName.includes('fruit') || categoryName.includes('vegetable')
+                const unit = product.unit || (isProduce ? 'per kg' : 'per unit')
+                return (
                 <ProductCard
                   key={product._id}
                   _id={product._id}
                   name={product.name}
                   price={product.price}
-                  unit={product.unit || 'per unit'}
+                  unit={unit}
                   image={product.imageURL}
+                  categoryName={product.category?.name}
                 />
-              ))}
+                )
+              })}
             </div>
           </>
         )}
