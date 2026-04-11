@@ -18,16 +18,27 @@ require("./models/category");
 const app = express();
 const port = Number(process.env.PORT) || 5000;
 
-// ✅ FIXED CORS (IMPORTANT)
-app.use(cors({
-  origin: ["https://freshmart-pink-nine.vercel.app"],
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+// ✅ FINAL CORS FIX (FULLY OPEN - GUARANTEED WORKING)
+const corsOptions = {
+  origin: true,
   credentials: true
-}));
+};
 
-// ✅ Handle preflight requests
-app.options('*', cors());
+app.use(cors(corsOptions));
+
+// ✅ EXTRA HEADERS (important for Vercel ↔ Render)
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+  next();
+});
 
 // Middleware
 app.use(express.json());
