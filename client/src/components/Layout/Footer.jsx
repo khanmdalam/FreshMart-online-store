@@ -47,8 +47,8 @@ function Footer() {
         <div>
           <h3 className="font-bold text-lg mb-4">Contact Us</h3>
           <ul className="space-y-2 text-gray-300 text-sm">
-            <li>📧 support@freshmart.com</li>
-            <li>📞 +918294962628</li>
+            <li>📧 rajakesharwani2628@gmail.com</li>
+            <li>📞+91 8294962628</li>
             <li>📍Greater Noida, Uttar Pradesh</li>
           </ul>
           <div className="mt-4">
