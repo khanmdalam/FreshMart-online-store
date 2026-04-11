@@ -3,7 +3,7 @@ const router = express.Router()
 const { createPaymentOrder, verifyPayment } = require('../controllers/paymentController')
 const { protect } = require('../middleware/authMiddleware')
 
-router.post('/create-order', protect, createPaymentOrder)
-router.post('/verify', protect, verifyPayment)
+router.post('/create-order', createPaymentOrder)
+router.post('/verify', verifyPayment)
 
 module.exports = router
