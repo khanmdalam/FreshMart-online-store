@@ -7,6 +7,7 @@ function Login() {
   const [form, setForm] = useState({ name: '', email: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const { login, register } = useAuth()
   const navigate = useNavigate()
 
@@ -72,7 +73,7 @@ function Login() {
               <input
                 type="text"
                 name="name"
-                placeholder="Raja Kesharwani"
+                placeholder="Enter your full name"
                 value={form.name}
                 onChange={handleChange}
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-400"
@@ -85,7 +86,7 @@ function Login() {
             <input
               type="email"
               name="email"
-              placeholder="raja@gmail.com"
+              placeholder=""
               value={form.email}
               onChange={handleChange}
               className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-400"
@@ -97,7 +98,7 @@ function Login() {
             <input
               type="password"
               name="password"
-              placeholder="••••••••"
+              placeholder=""
               value={form.password}
               onChange={handleChange}
               className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-400"
