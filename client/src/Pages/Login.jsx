@@ -93,14 +93,25 @@ function Login() {
 
           <div>
             <label className="text-sm text-gray-600 mb-1 block">Password</label>
-            <input
-              type="password"
-              name="password"
-              placeholder=""
-              value={form.password}
-              onChange={handleChange}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-400"
-            />
+
+            <div className="relative flex items-center">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Enter password"
+                value={form.password}
+                onChange={handleChange}
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-400"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 text-xs text-green-600 font-semibold"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
           </div>
 
           <button
