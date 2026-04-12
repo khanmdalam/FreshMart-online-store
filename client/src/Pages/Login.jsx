@@ -42,17 +42,15 @@ function Login() {
         <div className="flex bg-gray-100 rounded-xl p-1 mb-6">
           <button
             onClick={() => setIsLogin(true)}
-            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
-              isLogin ? 'bg-white text-green-600 shadow' : 'text-gray-500'
-            }`}
+            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${isLogin ? 'bg-white text-green-600 shadow' : 'text-gray-500'
+              }`}
           >
             Login
           </button>
           <button
             onClick={() => setIsLogin(false)}
-            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
-              !isLogin ? 'bg-white text-green-600 shadow' : 'text-gray-500'
-            }`}
+            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${!isLogin ? 'bg-white text-green-600 shadow' : 'text-gray-500'
+              }`}
           >
             Sign Up
           </button>
@@ -73,7 +71,7 @@ function Login() {
               <input
                 type="text"
                 name="name"
-                placeholder="Enter your full name"
+                placeholder=""
                 value={form.name}
                 onChange={handleChange}
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-400"
