@@ -18,11 +18,10 @@ function ProductDetail() {
   useEffect(() => {
     const snapshot = location.state?.productSnapshot
     if (snapshot && String(snapshot._id) === String(id)) {
-      setProduct({
-        ...snapshot,
-        stock: 999
-      })
+      setProduct(snapshot)
       setLoading(false)
+      // Still fetch fresh data to get correct stock
+      fetchProduct()
       return
     }
 
@@ -66,7 +65,7 @@ function ProductDetail() {
   return (
     <div className="min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-10 py-8">
       <div className="bg-white rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm border border-gray-100 max-w-4xl mx-auto">
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
           {/* Image */}
@@ -117,9 +116,8 @@ function ProductDetail() {
             </div>
 
             <div className="flex items-center gap-2 mb-6">
-              <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                product.stock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-              }`}>
+              <span className={`px-3 py-1 rounded-full text-xs font-medium ${product.stock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                }`}>
                 {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
               </span>
             </div>
