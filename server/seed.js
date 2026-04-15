@@ -22,6 +22,8 @@ const seedData = async () => {
       { name: 'Bakery', image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400', description: 'Fresh bakery items' },
       { name: 'Meat & Fish', image: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=400', description: 'Fresh meat and fish' },
       { name: 'Beverages', image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400', description: 'Drinks and beverages' },
+      { name: 'Paan Corner', image: 'https://imgs.search.brave.com/v5aE2TFgKOudf_SAodORtZoyc_jpRBh0Wl4nRy--G9s/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4u/cGl4YWJheS5jb20v/cGhvdG8vMjAxNC8x/MS8xNC8xOS81NS9s/aWdodGVyLTUzMTE3/MF82NDAuanBn', description: 'Cigerattes and other paan products' },
+
     ])
 
     console.log('Categories created')
@@ -32,6 +34,7 @@ const seedData = async () => {
     const bakery = categories[3]._id
     const meat = categories[4]._id
     const beverages = categories[5]._id
+    const paan = categories[6]._id
 
     // Create products
     await Product.insertMany([
@@ -75,7 +78,15 @@ const seedData = async () => {
       { name: 'Green Tea', price: 120, stock: 80, category: beverages, imageURL: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400', description: 'Premium green tea' },
       { name: 'Coconut Water', price: 40, stock: 70, category: beverages, imageURL: 'https://images.unsplash.com/photo-1559181567-c3190bda8a41?w=400', description: 'Fresh coconut water' },
       { name: 'Mango Smoothie', price: 90, stock: 50, category: beverages, imageURL: 'https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?w=400', description: 'Fresh mango smoothie' },
+
+      // Paan Corner
+      { name: 'Marlboro Red', price: 210, stock: 100, category: paan, imageURL: 'https://imgs.search.brave.com/a7t66RVxhqYqZqSYHmDUFeNaSHN9l5aN_l4hbMKiIg8/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMubWVtZS1hcnNl/bmFsLmNvbS80M2M4/NzIxNzJmMGU1MDc5/MjY0YzQ5OGMyODE4/MjU5MS5qcGc', description: 'Marlboro Red Cigarettes' },
+      { name: 'Marlboro Advance', price: 115, stock: 100, category: paan, imageURL: 'https://imgs.search.brave.com/jYGW1a3ZnG46fmapekX9hDLJw5G7NLrKXlC-WQ7MAG8/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pbWFn/ZS5jZG4uc2hweS5p/bi8zMTk1NTEvMTcw/MTQzNzA0MTg5MF8x/LmpwZWc_d2lkdGg9/NjAwJmZvcm1hdD13/ZWJw', description: 'Marlboro Advanced Cigarettes' },
+
+
+
     ])
+
 
     console.log('Products created')
     console.log('✅ Database seeded successfully!')
