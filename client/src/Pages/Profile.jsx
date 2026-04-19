@@ -10,8 +10,10 @@ const emptyAddress = {
 }
 
 function Profile() {
-  const { user, refreshProfile, updateProfile } = useAuth()
+  const { user, refreshProfile, updateProfile, mergeUserState } = useAuth()
   const [name, setName] = useState(user?.name || '')
+  const [gender, setGender] = useState(user?.gender || 'male')
+  const [avatar, setAvatar] = useState(user?.avatar || '')
   const [address, setAddress] = useState(user?.address || emptyAddress)
   const [loadingProfile, setLoadingProfile] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -28,6 +30,8 @@ function Profile() {
       try {
         const profile = await refreshProfile()
         setName(profile?.name || '')
+        setGender(profile?.gender || 'male')
+        setAvatar(profile?.avatar || '')
         setAddress({
           street: profile?.address?.street || '',
           city: profile?.address?.city || '',
@@ -49,6 +53,32 @@ function Profile() {
     setAddress((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
+  const handleAvatarChange = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) {
+      return
+    }
+
+    if (!file.type.startsWith('image/')) {
+      setError('Please choose an image file')
+      return
+    }
+
+    if (file.size > 4 * 1024 * 1024) {
+      setError('Please choose an image smaller than 4MB')
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      const nextAvatar = typeof reader.result === 'string' ? reader.result : ''
+      setError('')
+      setAvatar(nextAvatar)
+      mergeUserState({ avatar: nextAvatar })
+    }
+    reader.readAsDataURL(file)
+  }
+
   const handleSave = async (e) => {
     e.preventDefault()
     setError('')
@@ -63,6 +93,8 @@ function Profile() {
     try {
       await updateProfile({
         name: name.trim(),
+        gender,
+        avatar,
         address,
       })
       setSuccess('Profile updated successfully')
@@ -107,6 +139,42 @@ function Profile() {
 
         <form onSubmit={handleSave} className="space-y-4">
           <div>
+            <label className="text-sm text-gray-600 mb-3 block">Profile Photo</label>
+            <div className="flex items-center gap-4">
+              <div className="h-20 w-20 rounded-full overflow-hidden border border-gray-200 bg-gray-100 flex items-center justify-center text-3xl">
+                {avatar ? (
+                  <img src={avatar} alt={name || 'Profile'} className="h-full w-full object-cover" />
+                ) : (
+                  <span>{gender === 'female' ? '👩‍🦰' : '🧑'}</span>
+                )}
+              </div>
+              <div className="space-y-2">
+                <label className="inline-flex items-center px-4 py-2 rounded-xl border border-gray-200 text-sm text-gray-700 hover:border-green-400 hover:text-green-600 cursor-pointer">
+                  Choose from Gallery
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    className="hidden"
+                  />
+                </label>
+                {avatar && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAvatar('')
+                      mergeUserState({ avatar: '' })
+                    }}
+                    className="block text-sm text-red-400 hover:text-red-600"
+                  >
+                    Remove Photo
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div>
             <label className="text-sm text-gray-600 mb-1 block">Full Name</label>
             <input
               type="text"
@@ -115,6 +183,22 @@ function Profile() {
               placeholder="Raja Kesharwani"
               className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-400"
             />
+          </div>
+
+          <div>
+            <label className="text-sm text-gray-600 mb-1 block">Gender</label>
+            <select
+              value={gender}
+              onChange={(e) => {
+                const nextGender = e.target.value
+                setGender(nextGender)
+                mergeUserState({ gender: nextGender })
+              }}
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-400 bg-white"
+            >
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
           </div>
 
           <div>

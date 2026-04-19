@@ -10,6 +10,18 @@ export const AuthProvider = ({ children }) => {
       : null
   )
 
+  const mergeUserState = (updates) => {
+    const mergedUser = {
+      ...(user || {}),
+      ...updates,
+      token: user?.token || localStorage.getItem('token'),
+    }
+
+    setUser(mergedUser)
+    localStorage.setItem('user', JSON.stringify(mergedUser))
+    return mergedUser
+  }
+
   const login = async (email, password) => {
     try {
       const { data } = await API.post('/users/login', { email, password })
@@ -24,9 +36,9 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  const register = async (name, email, password) => {
+  const register = async (name, email, password, gender) => {
     try {
-      const { data } = await API.post('/users/register', { name, email, password })
+      const { data } = await API.post('/users/register', { name, email, password, gender })
       setUser(data)
       localStorage.setItem('user', JSON.stringify(data))
       localStorage.setItem('token', data.token)
@@ -40,26 +52,12 @@ export const AuthProvider = ({ children }) => {
 
   const refreshProfile = async () => {
     const { data } = await API.get('/users/profile')
-    const mergedUser = {
-      ...(user || {}),
-      ...data,
-      token: user?.token || localStorage.getItem('token'),
-    }
-    setUser(mergedUser)
-    localStorage.setItem('user', JSON.stringify(mergedUser))
-    return mergedUser
+    return mergeUserState(data)
   }
 
   const updateProfile = async (profileData) => {
     const { data } = await API.put('/users/profile', profileData)
-    const mergedUser = {
-      ...(user || {}),
-      ...data,
-      token: user?.token || localStorage.getItem('token'),
-    }
-    setUser(mergedUser)
-    localStorage.setItem('user', JSON.stringify(mergedUser))
-    return mergedUser
+    return mergeUserState(data)
   }
 
   const logout = () => {
@@ -69,7 +67,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, register, refreshProfile, updateProfile, logout }}>
+    <AuthContext.Provider value={{ user, login, register, refreshProfile, updateProfile, mergeUserState, logout }}>
       {children}
     </AuthContext.Provider>
   )

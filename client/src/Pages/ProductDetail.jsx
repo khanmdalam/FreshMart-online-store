@@ -4,6 +4,7 @@ import API from '../services/api'
 import { useCart } from '../context/useCart'
 import { useWishlist } from '../context/useWishlist'
 import { defaultProductImagePath, resolveProductImage } from '../utils/productImage'
+import { inferProductUnit } from '../utils/productUnit'
 
 function ProductDetail() {
   const { id } = useParams()
@@ -61,6 +62,7 @@ function ProductDetail() {
   const resolvedImage = resolveProductImage(product.name, product.imageURL)
   const hasDeal = Boolean(dealOffer?.discountedPrice)
   const effectivePrice = hasDeal ? Number(dealOffer.discountedPrice) : Number(product.price)
+  const unitLabel = product.unit || inferProductUnit(product.name, product.category?.name)
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-10 py-8">
@@ -91,7 +93,7 @@ function ProductDetail() {
                   _id: product._id,
                   name: product.name,
                   price: product.price,
-                  unit: product.unit || 'per unit',
+                  unit: unitLabel,
                   image: resolvedImage
                 })}
                 className={`text-2xl ${loved ? 'text-red-500' : 'text-gray-300 hover:text-red-400'}`}
@@ -112,7 +114,7 @@ function ProductDetail() {
                   </span>
                 </>
               )}
-              <span className="text-gray-400 text-sm">{product.unit || 'per unit'}</span>
+              <span className="text-gray-400 text-sm">{unitLabel}</span>
             </div>
 
             <div className="flex items-center gap-2 mb-6">
@@ -129,7 +131,7 @@ function ProductDetail() {
                     _id: product._id,
                     name: product.name,
                     price: effectivePrice,
-                    unit: product.unit || 'per unit',
+                    unit: unitLabel,
                     image: resolvedImage
                   })
                 }

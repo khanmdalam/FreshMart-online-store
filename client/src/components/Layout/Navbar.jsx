@@ -14,6 +14,8 @@ const homepageCategoryNames = [
   'Beverages'
 ]
 
+const normalizeGender = (gender) => String(gender || '').trim().toLowerCase()
+
 function Navbar() {
   const { user, logout } = useAuth()
   const { cartCount } = useCart()
@@ -21,9 +23,13 @@ function Navbar() {
   const navigate = useNavigate()
   const location = useLocation()
   const categoryMenuRef = useRef(null)
+  const profileMenuRef = useRef(null)
   const searchFromUrl = new URLSearchParams(location.search).get('q') || ''
   const [categories, setCategories] = useState([])
   const [showCategoryMenu, setShowCategoryMenu] = useState(false)
+  const [showProfileMenu, setShowProfileMenu] = useState(false)
+  const normalizedGender = normalizeGender(user?.gender)
+  const fallbackProfileIcon = normalizedGender === 'female' ? '👩‍🦰' : '🧑'
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -40,12 +46,17 @@ function Navbar() {
 
   useEffect(() => {
     setShowCategoryMenu(false)
+    setShowProfileMenu(false)
   }, [location.pathname, location.search])
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
       if (!categoryMenuRef.current?.contains(event.target)) {
         setShowCategoryMenu(false)
+      }
+
+      if (!profileMenuRef.current?.contains(event.target)) {
+        setShowProfileMenu(false)
       }
     }
 
@@ -93,7 +104,7 @@ function Navbar() {
           </div>
 
           <form onSubmit={handleSearch} className="flex items-center w-full lg:max-w-md bg-gray-100 rounded-full px-4 py-2 gap-2">
-            <span className="text-gray-400">🔍</span>
+            <span className="text-gray-400"></span>
             <input
               type="text"
               name="search"
@@ -101,7 +112,7 @@ function Navbar() {
               placeholder="Search Grocery Items..."
               key={`${location.pathname}-${location.search}`}
               defaultValue={searchFromUrl}
-              className="bg-transparent outline-none text-sm w-full text-gray-600"
+              className="bg-transparent outline-none text-sm w-full text-gray-500"
             />
           </form>
         </div>
@@ -114,28 +125,61 @@ function Navbar() {
         </Link>
 
         <div className="flex items-center justify-between sm:justify-start gap-3 sm:gap-6 text-sm text-gray-700 w-full lg:w-auto lg:justify-self-end lg:justify-end">
-          <Link to="/wishlist" className="flex items-center gap-1 hover:text-green-600">
-            ❤️ Loved {lovedCount > 0 ? `(${lovedCount})` : ''}
-          </Link>
           <Link to="/cart" className="flex items-center gap-1 hover:text-green-600">
             🛒 Cart {cartCount > 0 ? `(${cartCount})` : ''}
           </Link>
           {user ? (
-            <div className="flex flex-wrap items-center gap-3">
-              <Link to="/profile" className="text-green-600 font-medium hover:text-green-700">
-                👤 {user.name}
-              </Link>
-              {user && (
-                <Link to="/orders" className="text-sm text-gray-600 hover:text-green-600">
-                  My Orders
-                </Link>
-              )}
+            <div ref={profileMenuRef} className="relative flex flex-wrap items-center gap-3">
               <button
-                onClick={logout}
-                className="text-red-400 hover:text-red-600 text-xs"
+                type="button"
+                className="inline-flex items-center gap-2 text-green-600 font-medium hover:text-green-700 cursor-pointer"
+                onClick={() => setShowProfileMenu((prev) => !prev)}
               >
-                Logout
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full overflow-hidden border border-gray-200 bg-gray-100 text-base" aria-hidden="true">
+                  {user?.avatar ? (
+                    <img src={user.avatar} alt={user.name || 'Profile'} className="h-full w-full object-cover" />
+                  ) : (
+                    <span>{fallbackProfileIcon}</span>
+                  )}
+                </span>
+                <span>{user.name}</span>
               </button>
+
+              {showProfileMenu && (
+                <div className="absolute right-0 top-full mt-2 w-44 bg-white border border-gray-200 rounded-xl shadow-lg py-2 z-30">
+                  <Link
+                    to="/profile"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-green-600"
+                    onClick={() => setShowProfileMenu(false)}
+                  >
+                    Edit Profile
+                  </Link>
+                  <Link
+                    to="/orders"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-green-600"
+                    onClick={() => setShowProfileMenu(false)}
+                  >
+                    My Orders
+                  </Link>
+                  <Link
+                    to="/wishlist"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-green-600"
+                    onClick={() => setShowProfileMenu(false)}
+                  >
+                    Loved {lovedCount > 0 ? `(${lovedCount})` : ''}
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowProfileMenu(false)
+                      logout()
+                    }}
+                    className="block w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-gray-50 hover:text-red-600"
+                  >
+                    Log out
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <Link to="/login" className="flex items-center gap-1 hover:text-green-600">

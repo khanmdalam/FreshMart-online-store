@@ -8,6 +8,8 @@ const toUserResponse = (user, token = null) => {
     name: user.name,
     email: user.email,
     role: user.role,
+    gender: user.gender,
+    avatar: user.avatar || "",
     address: user.address || {},
   };
 
@@ -21,12 +23,17 @@ const toUserResponse = (user, token = null) => {
 //REGISTER
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, gender } = req.body;
+    const normalizedGender = String(gender || "").trim().toLowerCase();
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !normalizedGender) {
       return res.status(400).json({
-        message: "name, email and password are required",
+        message: "name, email, password and gender are required",
       });
+    }
+
+    if (!["male", "female"].includes(normalizedGender)) {
+      return res.status(400).json({ message: "Gender must be male or female" });
     }
 
     const userExists = await User.findOne({ email });
@@ -40,6 +47,7 @@ const registerUser = async (req, res) => {
     const newUser = await User.create({
       name,
       email,
+      gender: normalizedGender,
       password: hashedPassword,
     });
 
@@ -112,19 +120,26 @@ const updateProfile = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const { name, address } = req.body;
+    const { name, address, gender, avatar } = req.body;
+    const normalizedGender = String(gender || "").trim().toLowerCase();
 
     if (!name || !name.trim()) {
       return res.status(400).json({ message: "Name is required" });
     }
 
+    if (!normalizedGender || !["male", "female"].includes(normalizedGender)) {
+      return res.status(400).json({ message: "Gender must be male or female" });
+    }
+
     user.name = name.trim();
+    user.gender = normalizedGender;
     user.address = {
       street: address?.street?.trim() || "",
       city: address?.city?.trim() || "",
       state: address?.state?.trim() || "",
       pincode: address?.pincode?.trim() || "",
     };
+    user.avatar = typeof avatar === "string" ? avatar : user.avatar || "";
 
     const updatedUser = await user.save();
     res.status(200).json(toUserResponse(updatedUser));

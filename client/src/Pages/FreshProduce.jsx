@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import API from '../services/api'
 import ProductCard from '../components/products/productCard'
+import { inferProductUnit } from '../utils/productUnit'
 
 const fallbackProduce = {
   vegetables: [
@@ -54,7 +55,7 @@ function FreshProduce() {
       _id: p._id,
       name: p.name,
       price: p.price,
-      unit: p.unit || 'per kg',
+      unit: p.unit || inferProductUnit(p.name, p.category?.name),
       image: p.imageURL
     }))
 
@@ -62,17 +63,17 @@ function FreshProduce() {
       _id: p._id,
       name: p.name,
       price: p.price,
-      unit: p.unit || 'per kg',
+      unit: p.unit || inferProductUnit(p.name, p.category?.name),
       image: p.imageURL
     }))
 
     return {
       vegetables: mappedVegetables.length > 0
         ? mappedVegetables
-        : fallbackProduce.vegetables.map((p) => ({ ...p, image: p.imageURL, unit: 'per kg' })),
+        : fallbackProduce.vegetables.map((p) => ({ ...p, image: p.imageURL, unit: inferProductUnit(p.name, 'Fresh Vegetables') })),
       fruits: mappedFruits.length > 0
         ? mappedFruits
-        : fallbackProduce.fruits.map((p) => ({ ...p, image: p.imageURL, unit: 'per kg' }))
+        : fallbackProduce.fruits.map((p) => ({ ...p, image: p.imageURL, unit: inferProductUnit(p.name, 'Fruits') }))
     }
   }, [products])
 

@@ -11,6 +11,7 @@ function Products() {
   const [form, setForm] = useState({
     name: '',
     price: '',
+    unit: 'per unit',
     stock: '',
     imageURL: '',
     description: '',
@@ -65,7 +66,7 @@ function Products() {
     try {
       await API.post('/products', form)
       setSuccess('Product added successfully!')
-      setForm({ name: '', price: '', stock: '', imageURL: '', description: '', category: '' })
+      setForm({ name: '', price: '', unit: 'per unit', stock: '', imageURL: '', description: '', category: '' })
       fetchProducts()
     } catch (err) {
       setError(err.response?.data?.message || 'Something went wrong')
@@ -144,6 +145,24 @@ function Products() {
                   onChange={handleChange}
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-400"
                 />
+                <select
+                  name="unit"
+                  value={form.unit}
+                  onChange={handleChange}
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-400 text-gray-600 bg-white"
+                >
+                  <option value="per kg">per kg</option>
+                  <option value="per dozen">per dozen</option>
+                  <option value="per piece">per piece</option>
+                  <option value="per unit">per unit</option>
+                  <option value="per litre">per litre</option>
+                  <option value="per pack">per pack</option>
+                  <option value="per bottle">per bottle</option>
+                  <option value="per loaf">per loaf</option>
+                  <option value="per 100g">per 100g</option>
+                  <option value="per 200g">per 200g</option>
+                  <option value="per 500g">per 500g</option>
+                </select>
                 <input
                   type="number"
                   name="stock"
@@ -272,7 +291,7 @@ function Products() {
                       <p className="font-semibold text-gray-800">{product.name}</p>
                       <p className="text-sm text-gray-400">{product.description}</p>
                       <div className="flex gap-4 mt-1">
-                        <span className="text-green-600 font-bold text-sm">₹{product.price}</span>
+                        <span className="text-green-600 font-bold text-sm">₹{product.price} <span className="text-gray-400 font-normal">{product.unit || 'per unit'}</span></span>
                         <span className="text-gray-400 text-sm">Stock: {product.stock}</span>
                       </div>
                     </div>

@@ -4,7 +4,7 @@ import { useAuth } from '../context/useAuth'
 
 function Login() {
   const [isLogin, setIsLogin] = useState(true)
-  const [form, setForm] = useState({ name: '', email: '', password: '' })
+  const [form, setForm] = useState({ name: '', email: '', password: '', gender: 'male' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -22,7 +22,7 @@ function Login() {
       if (isLogin) {
         await login(form.email, form.password)
       } else {
-        await register(form.name, form.email, form.password)
+        await register(form.name, form.email, form.password, form.gender)
       }
       navigate('/')
     } catch (err) {
@@ -66,17 +66,32 @@ function Login() {
         {/* Form */}
         <div className="space-y-4">
           {!isLogin && (
-            <div>
-              <label className="text-sm text-gray-600 mb-1 block">Full Name</label>
-              <input
-                type="text"
-                name="name"
-                placeholder=""
-                value={form.name}
-                onChange={handleChange}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-400"
-              />
-            </div>
+            <>
+              <div>
+                <label className="text-sm text-gray-600 mb-1 block">Full Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder=""
+                  value={form.name}
+                  onChange={handleChange}
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-400"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-600 mb-1 block">Gender</label>
+                <select
+                  name="gender"
+                  value={form.gender}
+                  onChange={handleChange}
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-400 bg-white"
+                >
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                </select>
+              </div>
+            </>
           )}
 
           <div>

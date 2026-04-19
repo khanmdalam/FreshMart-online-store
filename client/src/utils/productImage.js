@@ -99,10 +99,10 @@ const exactProductImageMap = {
 }
 
 export const resolveProductImage = (name, image) => {
-  if (isHttpUrl(image) || isLocalImagePath(image)) return image
-
   const exactAsset = exactProductImageMap[normalizeName(name)]
   if (exactAsset) return productItemImagePath(exactAsset)
+
+  if (isHttpUrl(image) || isLocalImagePath(image)) return image
 
   const asset = assetFromName(name)
   return productImageAssetPath(asset)

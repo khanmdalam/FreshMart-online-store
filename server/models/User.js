@@ -24,6 +24,15 @@ const userSchema = new mongoose.Schema(
       state: String,
       pincode: String
     },
+    gender: {
+      type: String,
+      enum: ["male", "female"],
+      default: "male",
+    },
+    avatar: {
+      type: String,
+      default: "",
+    },
     role: {
       type: String,
       enum: ["customer", "admin"],

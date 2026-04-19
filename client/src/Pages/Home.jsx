@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import API from '../services/api'
 import Hero from '../components/Hero'
 import ProductCard from '../components/products/productCard'
+import { inferProductUnit } from '../utils/productUnit'
 
 const Categories = lazy(() => import('../components/products/Categories'))
 const FreshPicks = lazy(() => import('../components/products/freshPicks'))
@@ -77,9 +78,7 @@ function Home() {
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {visibleProducts.map((product) => {
-                const categoryName = String(product.category?.name || '').toLowerCase()
-                const isProduce = categoryName.includes('fruit') || categoryName.includes('vegetable')
-                const unit = product.unit || (isProduce ? 'per kg' : 'per unit')
+                const unit = product.unit || inferProductUnit(product.name, product.category?.name)
                 return (
                 <ProductCard
                   key={product._id}

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import API from '../services/api'
 import ProductCard from '../components/products/productCard'
+import { inferProductUnit } from '../utils/productUnit'
 
 const homepageCategoryNames = [
   'Fresh Vegetables',
@@ -14,46 +15,46 @@ const homepageCategoryNames = [
 
 const staticProductsByCategory = {
   'Fresh Vegetables': [
-    { _id: 'sv1', name: 'Seedless Green Grapes', price: 133, imageURL: '🍇' },
-    { _id: 'sv2', name: 'Organic Strawberries', price: 133, imageURL: '🍓' },
-    { _id: 'sv3', name: 'Imported Kiwi', price: 133, imageURL: '🥝' },
-    { _id: 'sv4', name: 'Sweet Pomegranate', price: 133, imageURL: '🍎' },
-    { _id: 'sv5', name: 'Rose Papaya', price: 120, imageURL: '🍈' },
+    { _id: 'sv1', name: 'Organic Spinach', price: 35, unit: 'per kg', imageURL: '' },
+    { _id: 'sv2', name: 'Fresh Broccoli', price: 60, unit: 'per kg', imageURL: '' },
+    { _id: 'sv3', name: 'Red Bell Pepper', price: 85, unit: 'per kg', imageURL: '' },
+    { _id: 'sv4', name: 'Carrot Bunch', price: 40, unit: 'per kg', imageURL: '' },
+    { _id: 'sv5', name: 'Organic Red Tomatoes', price: 30, unit: 'per kg', imageURL: '' },
   ],
   Fruits: [
-    { _id: 'sf1', name: 'Fresh Mango', price: 150, imageURL: '🥭' },
-    { _id: 'sf2', name: 'Watermelon', price: 40, imageURL: '🍉' },
-    { _id: 'sf3', name: 'Pineapple', price: 80, imageURL: '🍍' },
-    { _id: 'sf4', name: 'Fresh Orange', price: 90, imageURL: '🍊' },
-    { _id: 'sf5', name: 'Banana Bunch', price: 30, imageURL: '🍌' },
+    { _id: 'sf1', name: 'Fresh Apple', price: 120, unit: 'per kg', imageURL: '' },
+    { _id: 'sf2', name: 'Banana', price: 45, unit: 'per kg', imageURL: '' },
+    { _id: 'sf3', name: 'Orange', price: 90, unit: 'per kg', imageURL: '' },
+    { _id: 'sf4', name: 'Pomegranate', price: 140, unit: 'per kg', imageURL: '' },
+    { _id: 'sf5', name: 'Watermelon', price: 50, unit: 'per kg', imageURL: '' },
   ],
   'Dairy & Eggs': [
-    { _id: 'sd1', name: 'Fresh Whole Milk', price: 60, imageURL: '🥛' },
-    { _id: 'sd2', name: 'Farm Eggs', price: 80, imageURL: '🥚' },
-    { _id: 'sd3', name: 'Butter', price: 50, imageURL: '🧈' },
-    { _id: 'sd4', name: 'Paneer', price: 90, imageURL: '🧀' },
-    { _id: 'sd5', name: 'Curd', price: 40, imageURL: '🍶' },
+    { _id: 'sd1', name: 'Fresh Whole Milk', price: 60, unit: 'per litre', imageURL: '' },
+    { _id: 'sd2', name: 'Farm Eggs', price: 80, unit: 'per dozen', imageURL: '' },
+    { _id: 'sd3', name: 'Butter', price: 50, unit: 'per 100g', imageURL: '' },
+    { _id: 'sd4', name: 'Paneer', price: 90, unit: 'per 200g', imageURL: '' },
+    { _id: 'sd5', name: 'Curd', price: 40, unit: 'per 500g', imageURL: '' },
   ],
   Bakery: [
-    { _id: 'sb1', name: 'Whole Wheat Bread', price: 45, imageURL: '🍞' },
-    { _id: 'sb2', name: 'Croissant', price: 30, imageURL: '🥐' },
-    { _id: 'sb3', name: 'Muffin', price: 25, imageURL: '🧁' },
-    { _id: 'sb4', name: 'Baguette', price: 50, imageURL: '🥖' },
-    { _id: 'sb5', name: 'Cookies', price: 60, imageURL: '🍪' },
+    { _id: 'sb1', name: 'Whole Wheat Bread', price: 45, unit: 'per loaf', imageURL: '' },
+    { _id: 'sb2', name: 'Croissant', price: 30, unit: 'per piece', imageURL: '' },
+    { _id: 'sb3', name: 'Muffin', price: 25, unit: 'per piece', imageURL: '' },
+    { _id: 'sb4', name: 'Baguette', price: 50, unit: 'per piece', imageURL: '' },
+    { _id: 'sb5', name: 'Cookies', price: 60, unit: 'per pack', imageURL: '' },
   ],
   'Meat & Fish': [
-    { _id: 'sm1', name: 'Fresh Chicken', price: 200, imageURL: '🍗' },
-    { _id: 'sm2', name: 'Salmon Fillet', price: 350, imageURL: '🐟' },
-    { _id: 'sm3', name: 'Prawns', price: 400, imageURL: '🦐' },
-    { _id: 'sm4', name: 'Mutton', price: 500, imageURL: '🥩' },
-    { _id: 'sm5', name: 'Tuna', price: 300, imageURL: '🐠' },
+    { _id: 'sm1', name: 'Fresh Chicken', price: 200, unit: 'per kg', imageURL: '' },
+    { _id: 'sm2', name: 'Salmon Fillet', price: 350, unit: 'per kg', imageURL: '' },
+    { _id: 'sm3', name: 'Prawns', price: 400, unit: 'per kg', imageURL: '' },
+    { _id: 'sm4', name: 'Mutton', price: 500, unit: 'per kg', imageURL: '' },
+    { _id: 'sm5', name: 'Tuna', price: 300, unit: 'per kg', imageURL: '' },
   ],
   Beverages: [
-    { _id: 'sbv1', name: 'Orange Juice', price: 80, imageURL: '🧃' },
-    { _id: 'sbv2', name: 'Green Tea', price: 120, imageURL: '🍵' },
-    { _id: 'sbv3', name: 'Coconut Water', price: 40, imageURL: '🥥' },
-    { _id: 'sbv4', name: 'Lemonade', price: 50, imageURL: '🍋' },
-    { _id: 'sbv5', name: 'Mango Smoothie', price: 90, imageURL: '🥤' },
+    { _id: 'sbv1', name: 'Orange Juice', price: 80, unit: 'per litre', imageURL: '' },
+    { _id: 'sbv2', name: 'Green Tea', price: 120, unit: 'per pack', imageURL: '' },
+    { _id: 'sbv3', name: 'Coconut Water', price: 40, unit: 'per piece', imageURL: '' },
+    { _id: 'sbv4', name: 'Lemonade', price: 50, unit: 'per litre', imageURL: '' },
+    { _id: 'sbv5', name: 'Mango Smoothie', price: 90, unit: 'per bottle', imageURL: '' },
   ],
 }
 
@@ -429,9 +430,7 @@ function Shop() {
               <p className="text-gray-400 text-sm mb-4">{filtered.length} products found</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 {filtered.map((product) => {
-                  const categoryName = String(product.category?.name || '').toLowerCase()
-                  const isProduce = categoryName.includes('fruit') || categoryName.includes('vegetable')
-                  const unit = product.unit || (isProduce ? 'per kg' : 'per unit')
+                  const unit = product.unit || inferProductUnit(product.name, product.category?.name)
                   return (
                   <ProductCard
                     key={product._id}

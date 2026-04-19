@@ -10,6 +10,11 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  unit: {
+    type: String,
+    trim: true,
+    default: 'per unit'
+  },
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',

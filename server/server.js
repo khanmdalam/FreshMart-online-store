@@ -41,7 +41,7 @@ app.use((req, res, next) => {
 });
 
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: "6mb" }));
 
 // Health check route
 app.get("/api/health", (req, res) => {

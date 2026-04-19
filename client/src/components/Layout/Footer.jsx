@@ -12,11 +12,6 @@ function Footer() {
           <p className="text-gray-300 text-sm leading-relaxed">
             Shop from thousands of farm-fresh fruits, vegetables, dairy and daily essentials at unbeatable prices.
           </p>
-          <div className="flex gap-3 mt-4">
-            <a href="#" aria-label="Visit FreshMart on Facebook" className="bg-gray-700 p-2.5 rounded-full cursor-pointer hover:bg-green-500 transition-colors min-w-10 min-h-10 flex items-center justify-center">📘</a>
-            <a href="#" aria-label="Visit FreshMart on Instagram" className="bg-gray-700 p-2.5 rounded-full cursor-pointer hover:bg-green-500 transition-colors min-w-10 min-h-10 flex items-center justify-center">📸</a>
-            <a href="#" aria-label="Visit FreshMart on Twitter" className="bg-gray-700 p-2.5 rounded-full cursor-pointer hover:bg-green-500 transition-colors min-w-10 min-h-10 flex items-center justify-center">🐦</a>
-          </div>
         </div>
 
         {/* Quick Links */}

@@ -36,7 +36,7 @@ const getProductById = async (req, res) => {
 // CREATE PRODUCT (admin only)
 const createProduct = async (req, res) => {
   try {
-    const { name, price, category, stock, imageURL, description } = req.body;
+    const { name, price, unit, category, stock, imageURL, description } = req.body;
 
     if (
       !name ||
@@ -51,6 +51,7 @@ const createProduct = async (req, res) => {
     const product = await Product.create({
       name,
       price,
+      unit,
       category,
       stock,
       imageURL,
