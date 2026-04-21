@@ -154,6 +154,7 @@ function Products() {
                   <option value="per kg">per kg</option>
                   <option value="per dozen">per dozen</option>
                   <option value="per piece">per piece</option>
+                  <option value="per packet">per packet</option>
                   <option value="per unit">per unit</option>
                   <option value="per litre">per litre</option>
                   <option value="per pack">per pack</option>

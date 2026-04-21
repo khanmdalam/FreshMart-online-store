@@ -5,12 +5,12 @@ import { resolveProductImage } from '../utils/productImage'
 import { useCart } from '../context/useCart'
 
 const fallbackDeals = [
-  { id: 'fd1', name: 'Fresh Mango', categoryName: 'Fruits', price: 150, image: '🥭', discount: 18 },
-  { id: 'fd2', name: 'Organic Strawberries', categoryName: 'Fresh Vegetables', price: 133, image: '🍓', discount: 20 },
-  { id: 'fd3', name: 'Farm Eggs', categoryName: 'Dairy & Eggs', price: 80, image: '🥚', discount: 15 },
-  { id: 'fd4', name: 'Whole Wheat Bread', categoryName: 'Bakery', price: 45, image: '🍞', discount: 12 },
-  { id: 'fd5', name: 'Fresh Chicken', categoryName: 'Meat & Fish', price: 200, image: '🍗', discount: 22 },
-  { id: 'fd6', name: 'Orange Juice', categoryName: 'Beverages', price: 80, image: '🧃', discount: 17 },
+  { id: 'fd1', name: 'Fresh Mango', categoryName: 'Fruits', price: 150, image: '', discount: 18 },
+  { id: 'fd2', name: 'Organic Strawberries', categoryName: 'Fresh Vegetables', price: 133, image: '', discount: 20 },
+  { id: 'fd3', name: 'Farm Eggs', categoryName: 'Dairy & Eggs', price: 80, image: '', discount: 15 },
+  { id: 'fd4', name: 'Whole Wheat Bread', categoryName: 'Bakery', price: 45, image: '', discount: 12 },
+  { id: 'fd5', name: 'Fresh Chicken', categoryName: 'Meat & Fish', price: 200, image: '', discount: 22 },
+  { id: 'fd6', name: 'Orange Juice', categoryName: 'Beverages', price: 80, image: '', discount: 17 },
 ]
 
 function Deals() {

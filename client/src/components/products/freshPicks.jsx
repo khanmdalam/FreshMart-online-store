@@ -2,11 +2,10 @@ import { Link } from 'react-router-dom'
 import ProductCard from './productCard'
 
 const products = [
-  { _id: 1, name: 'Organic Red Tomatoes', price: 40, unit: 'per kg', image: '🍅' },
-  { _id: 2, name: 'Farm Eggs', price: 80, unit: 'per dozen', image: '🥚' },
-  { _id: 3, name: 'Fresh Bananas', price: 30, unit: 'per kg', image: '🍌' },
-  { _id: 4, name: 'Fresh Whole Milk', price: 60, unit: 'per litre', image: '🥛' },
-  { _id: 5, name: 'Premium Basmati Rice', price: 120, unit: 'per kg', image: '🌾' },
+  { _id: 1, name: 'Organic Red Tomatoes', price: 40, unit: 'per kg', image: '' },
+  { _id: 2, name: 'Farm Eggs', price: 80, unit: 'per dozen', image: '' },
+  { _id: 4, name: 'Fresh Whole Milk', price: 60, unit: 'per litre', image: '' },
+  { _id: 5, name: 'Premium Basmati Rice', price: 120, unit: 'per kg', image: '' },
 ]
 
 function FreshPicks() {

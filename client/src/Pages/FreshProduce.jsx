@@ -6,7 +6,7 @@ import { inferProductUnit } from '../utils/productUnit'
 
 const fallbackProduce = {
   vegetables: [
-    { _id: 'fpv1', name: 'Organic Spinach', price: 35, imageURL: '🥬' },
+    { _id: 'fpv1', name: 'Organic Spinach', price: 40, unit: 'per packet', imageURL: '🥬' },
     { _id: 'fpv2', name: 'Fresh Broccoli', price: 60, imageURL: '🥦' },
     { _id: 'fpv3', name: 'Red Bell Pepper', price: 85, imageURL: '🫑' },
     { _id: 'fpv4', name: 'Carrot Bunch', price: 40, imageURL: '🥕' },
@@ -14,7 +14,7 @@ const fallbackProduce = {
   ],
   fruits: [
     { _id: 'fpf1', name: 'Fresh Apple', price: 120, imageURL: '🍎' },
-    { _id: 'fpf2', name: 'Banana', price: 45, imageURL: '🍌' },
+    { _id: 'fpf2', name: 'Banana', price: 45, unit: 'per dozen', imageURL: '🍌' },
     { _id: 'fpf3', name: 'Orange', price: 90, imageURL: '🍊' },
     { _id: 'fpf4', name: 'Pomegranate', price: 140, imageURL: '🍎' },
     { _id: 'fpf5', name: 'Watermelon', price: 50, imageURL: '🍉' },
@@ -70,10 +70,10 @@ function FreshProduce() {
     return {
       vegetables: mappedVegetables.length > 0
         ? mappedVegetables
-        : fallbackProduce.vegetables.map((p) => ({ ...p, image: p.imageURL, unit: inferProductUnit(p.name, 'Fresh Vegetables') })),
+        : fallbackProduce.vegetables.map((p) => ({ ...p, image: p.imageURL, unit: p.unit || inferProductUnit(p.name, 'Fresh Vegetables') })),
       fruits: mappedFruits.length > 0
         ? mappedFruits
-        : fallbackProduce.fruits.map((p) => ({ ...p, image: p.imageURL, unit: inferProductUnit(p.name, 'Fruits') }))
+        : fallbackProduce.fruits.map((p) => ({ ...p, image: p.imageURL, unit: p.unit || inferProductUnit(p.name, 'Fruits') }))
     }
   }, [products])
 

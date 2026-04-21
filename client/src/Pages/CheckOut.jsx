@@ -140,7 +140,7 @@ function Checkout() {
                 <input
                   type="text"
                   name="street"
-                  placeholder="123 Main Street"
+                  placeholder=""
                   value={address.street}
                   onChange={handleChange}
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-400"
@@ -153,7 +153,7 @@ function Checkout() {
                   <input
                     type="text"
                     name="city"
-                    placeholder="Mumbai"
+                    placeholder=""
                     value={address.city}
                     onChange={handleChange}
                     className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-400"
@@ -164,7 +164,7 @@ function Checkout() {
                   <input
                     type="text"
                     name="state"
-                    placeholder="Maharashtra"
+                    placeholder=""
                     value={address.state}
                     onChange={handleChange}
                     className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-400"
@@ -177,7 +177,7 @@ function Checkout() {
                 <input
                   type="text"
                   name="pincode"
-                  placeholder="400001"
+                  placeholder=""
                   value={address.pincode}
                   onChange={handleChange}
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-400"

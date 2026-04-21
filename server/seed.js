@@ -39,7 +39,7 @@ const seedData = async () => {
     // Create products
     await Product.insertMany([
       // Vegetables
-      { name: 'Organic Spinach', price: 35, unit: 'per kg', stock: 100, category: vegs, imageURL: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400', description: 'Fresh organic spinach' },
+      { name: 'Organic Spinach', price: 40, unit: 'per packet', stock: 100, category: vegs, imageURL: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400', description: 'Fresh organic spinach' },
       { name: 'Fresh Broccoli', price: 60, unit: 'per kg', stock: 80, category: vegs, imageURL: 'https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?w=400', description: 'Fresh green broccoli' },
       { name: 'Red Bell Pepper', price: 85, unit: 'per kg', stock: 60, category: vegs, imageURL: 'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=400', description: 'Fresh red bell pepper' },
       { name: 'Carrot Bunch', price: 40, unit: 'per kg', stock: 120, category: vegs, imageURL: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400', description: 'Fresh carrot bunch' },
@@ -48,7 +48,7 @@ const seedData = async () => {
 
       // Fruits
       { name: 'Fresh Apple', price: 120, unit: 'per kg', stock: 50, category: fruits, imageURL: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400', description: 'Fresh red apples from Kashmir' },
-      { name: 'Banana', price: 45, unit: 'per kg', stock: 100, category: fruits, imageURL: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400', description: 'Fresh organic bananas' },
+      { name: 'Banana', price: 45, unit: 'per dozen', stock: 100, category: fruits, imageURL: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400', description: 'Fresh organic bananas' },
       { name: 'Orange', price: 90, unit: 'per kg', stock: 70, category: fruits, imageURL: 'https://images.unsplash.com/photo-1582979512210-99b6a53386f9?w=400', description: 'Fresh juicy oranges' },
       { name: 'Pomegranate', price: 140, unit: 'per kg', stock: 40, category: fruits, imageURL: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=400', description: 'Fresh pomegranate' },
       { name: 'Watermelon', price: 50, unit: 'per kg', stock: 30, category: fruits, imageURL: 'https://images.unsplash.com/photo-1589984662646-e7b2e4962f18?w=400', description: 'Fresh watermelon' },
@@ -59,7 +59,7 @@ const seedData = async () => {
       { name: 'Farm Eggs', price: 80, unit: 'per dozen', stock: 200, category: dairy, imageURL: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=400', description: 'Farm fresh eggs' },
       { name: 'Paneer', price: 90, unit: 'per 200g', stock: 50, category: dairy, imageURL: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=400', description: 'Fresh homemade paneer' },
       { name: 'Butter', price: 55, unit: 'per 100g', stock: 80, category: dairy, imageURL: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=400', description: 'Fresh farm butter' },
-      { name: 'Curd', price: 40, unit: 'per 500g', stock: 100, category: dairy, imageURL: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400', description: 'Fresh homemade curd' },
+      { name: 'Curd', price: 80, unit: 'per 500g', stock: 100, category: dairy, imageURL: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400', description: 'Fresh homemade curd' },
 
       // Bakery
       { name: 'Whole Wheat Bread', price: 45, unit: 'per loaf', stock: 60, category: bakery, imageURL: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400', description: 'Freshly baked whole wheat bread' },

@@ -15,7 +15,7 @@ const homepageCategoryNames = [
 
 const staticProductsByCategory = {
   'Fresh Vegetables': [
-    { _id: 'sv1', name: 'Organic Spinach', price: 35, unit: 'per kg', imageURL: '' },
+    { _id: 'sv1', name: 'Organic Spinach', price: 40, unit: 'per packet', imageURL: '' },
     { _id: 'sv2', name: 'Fresh Broccoli', price: 60, unit: 'per kg', imageURL: '' },
     { _id: 'sv3', name: 'Red Bell Pepper', price: 85, unit: 'per kg', imageURL: '' },
     { _id: 'sv4', name: 'Carrot Bunch', price: 40, unit: 'per kg', imageURL: '' },
@@ -23,7 +23,7 @@ const staticProductsByCategory = {
   ],
   Fruits: [
     { _id: 'sf1', name: 'Fresh Apple', price: 120, unit: 'per kg', imageURL: '' },
-    { _id: 'sf2', name: 'Banana', price: 45, unit: 'per kg', imageURL: '' },
+    { _id: 'sf2', name: 'Banana', price: 45, unit: 'per dozen', imageURL: '' },
     { _id: 'sf3', name: 'Orange', price: 90, unit: 'per kg', imageURL: '' },
     { _id: 'sf4', name: 'Pomegranate', price: 140, unit: 'per kg', imageURL: '' },
     { _id: 'sf5', name: 'Watermelon', price: 50, unit: 'per kg', imageURL: '' },
@@ -33,7 +33,7 @@ const staticProductsByCategory = {
     { _id: 'sd2', name: 'Farm Eggs', price: 80, unit: 'per dozen', imageURL: '' },
     { _id: 'sd3', name: 'Butter', price: 50, unit: 'per 100g', imageURL: '' },
     { _id: 'sd4', name: 'Paneer', price: 90, unit: 'per 200g', imageURL: '' },
-    { _id: 'sd5', name: 'Curd', price: 40, unit: 'per 500g', imageURL: '' },
+    { _id: 'sd5', name: 'Curd', price: 80, unit: 'per 500g', imageURL: '' },
   ],
   Bakery: [
     { _id: 'sb1', name: 'Whole Wheat Bread', price: 45, unit: 'per loaf', imageURL: '' },

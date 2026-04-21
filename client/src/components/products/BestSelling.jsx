@@ -16,14 +16,13 @@ const productsByTab = {
     { _id: 'f2', name: 'Watermelon', price: 40, unit: 'per kg', image: '🍉' },
     { _id: 'f3', name: 'Pineapple', price: 80, unit: 'per piece', image: '🍍' },
     { _id: 'f4', name: 'Fresh Orange', price: 90, unit: 'per kg', image: '🍊' },
-    { _id: 'f5', name: 'Banana Bunch', price: 30, unit: 'per kg', image: '🍌' },
   ],
   'Dairy & Eggs': [
     { _id: 'd1', name: 'Fresh Whole Milk', price: 60, unit: 'per litre', image: '🥛' },
     { _id: 'd2', name: 'Farm Eggs', price: 80, unit: 'per dozen', image: '🥚' },
     { _id: 'd3', name: 'Butter', price: 50, unit: 'per 100g', image: '🧈' },
     { _id: 'd4', name: 'Paneer', price: 90, unit: 'per 200g', image: '🧀' },
-    { _id: 'd5', name: 'Curd', price: 40, unit: 'per 500g', image: '🍶' },
+    { _id: 'd5', name: 'Curd', price: 80, unit: 'per 500g', image: '🍶' },
   ],
   'Bakery': [
     { _id: 'b1', name: 'Whole Wheat Bread', price: 45, unit: 'per loaf', image: '🍞' },
