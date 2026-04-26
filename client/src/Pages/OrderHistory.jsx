@@ -79,7 +79,7 @@ function OrderHistory() {
 
       {orders.length === 0 ? (
         <div className="bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100">
-          <span className="text-6xl mb-4 block">📦</span>
+          <span className="text-6xl mb-4 block"></span>
           <h2 className="text-xl font-bold text-gray-700 mb-2">No orders yet</h2>
           <p className="text-gray-400 mb-6">You haven't placed any orders yet</p>
           <Link to="/shop" className="bg-green-500 text-white px-6 py-3 rounded-xl hover:bg-green-600">
