@@ -3,21 +3,36 @@ import { useWishlist } from '../../context/useWishlist'
 import { useNavigate } from 'react-router-dom'
 import { defaultProductImagePath, resolveProductImage } from '../../utils/productImage'
 
-function ProductCard({ _id, name, price, unit, image, categoryName }) {
+const normalizeName = (value) => String(value || '').trim().toLowerCase()
+
+function ProductCard({ _id, name, price, unit, image, categoryName, stock, description }) {
   const { addToCart, cartItems, increaseQty, decreaseQty } = useCart()
   const { toggleWishlist, isLoved } = useWishlist()
   const navigate = useNavigate()
 
-  const cartItem = cartItems.find((item) => item._id === _id)
+  const cartItem = cartItems.find((item) => item._id === _id || normalizeName(item.name) === normalizeName(name))
+  const cartItemId = cartItem?._id || _id
   const loved = isLoved(_id)
   const resolvedImage = resolveProductImage(name, image)
+  const stockValue = Number(stock)
+  const hasStock = Number.isFinite(stockValue)
+  const isOutOfStock = hasStock && stockValue <= 0
+  const reachedStockLimit = hasStock && cartItem && cartItem.quantity >= stockValue
   const normalizedCategory = String(categoryName || '').toLowerCase()
   const isLocalFarmCategory = normalizedCategory.includes('vegetable') || normalizedCategory.includes('fruit')
   const sourceLabel = isLocalFarmCategory ? 'Local Farmers' : 'FreshMart Quality'
 
   const handleAddToCart = (e) => {
     e.stopPropagation()
-    addToCart({ _id, name, price, unit, image: resolvedImage })
+    if (isOutOfStock) return
+    addToCart({
+      _id,
+      name,
+      price,
+      unit,
+      image: resolvedImage,
+      ...(hasStock ? { stock: stockValue } : {})
+    })
   }
 
   return (
@@ -30,7 +45,8 @@ function ProductCard({ _id, name, price, unit, image, categoryName }) {
             price,
             unit,
             imageURL: resolvedImage,
-            description: 'Fresh and quality product from FreshMart.'
+            ...(hasStock ? { stock: stockValue } : {}),
+            description: description || 'Fresh and quality product from FreshMart.'
           }
         }
       })}
@@ -70,9 +86,10 @@ function ProductCard({ _id, name, price, unit, image, categoryName }) {
       {!cartItem ? (
         <button
           onClick={handleAddToCart}
-          className="w-full mt-2.5 sm:mt-3 bg-green-500 hover:bg-green-600 text-white text-sm py-2.5 rounded-xl transition-colors min-h-10"
+          disabled={isOutOfStock}
+          className="w-full mt-2.5 sm:mt-3 bg-green-500 hover:bg-green-600 text-white text-sm py-2.5 rounded-xl transition-colors min-h-10 disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
-          + Add to Cart
+          {isOutOfStock ? 'Out of Stock' : '+ Add to Cart'}
         </button>
       ) : (
         <div
@@ -80,7 +97,7 @@ function ProductCard({ _id, name, price, unit, image, categoryName }) {
           className="flex items-center justify-between mt-2.5 sm:mt-3 bg-green-50 rounded-xl px-3 py-1.5 min-h-10"
         >
           <button
-            onClick={() => decreaseQty(_id)}
+            onClick={() => decreaseQty(cartItemId)}
             className="text-green-600 font-bold text-lg hover:text-green-800 min-w-9 min-h-9"
             aria-label={`Decrease quantity for ${name}`}
           >
@@ -88,8 +105,9 @@ function ProductCard({ _id, name, price, unit, image, categoryName }) {
           </button>
           <span className="font-semibold text-green-700">{cartItem.quantity}</span>
           <button
-            onClick={() => increaseQty(_id)}
-            className="text-green-600 font-bold text-lg hover:text-green-800 min-w-9 min-h-9"
+            onClick={() => increaseQty(cartItemId)}
+            disabled={reachedStockLimit}
+            className="text-green-600 font-bold text-lg hover:text-green-800 min-w-9 min-h-9 disabled:text-gray-300 disabled:cursor-not-allowed"
             aria-label={`Increase quantity for ${name}`}
           >
             +

@@ -6,6 +6,8 @@ import { useWishlist } from '../context/useWishlist'
 import { defaultProductImagePath, resolveProductImage } from '../utils/productImage'
 import { inferProductUnit } from '../utils/productUnit'
 
+const normalizeName = (value) => String(value || '').trim().toLowerCase()
+
 function ProductDetail() {
   const { id } = useParams()
   const location = useLocation()
@@ -17,33 +19,52 @@ function ProductDetail() {
   const dealOffer = location.state?.dealOffer
 
   useEffect(() => {
+    let cancelled = false
     const snapshot = location.state?.productSnapshot
-    if (snapshot && String(snapshot._id) === String(id)) {
-      setProduct(snapshot)
-      setLoading(false)
-      // Still fetch fresh data to get correct stock
-      fetchProduct()
-      return
+
+    const loadProduct = async () => {
+      if (snapshot && String(snapshot._id) === String(id)) {
+        setProduct(snapshot)
+        setLoading(false)
+      } else {
+        setLoading(true)
+      }
+
+      if (!snapshot && !isMongoId) {
+        setProduct(null)
+        setLoading(false)
+        return
+      }
+
+      try {
+        if (isMongoId) {
+          const { data } = await API.get(`/products/${id}`)
+          if (!cancelled) {
+            setProduct(data)
+          }
+          return
+        }
+
+        const { data } = await API.get('/products')
+        const matchingProduct = data.find((product) => normalizeName(product.name) === normalizeName(snapshot?.name))
+        if (!cancelled && matchingProduct) {
+          setProduct(matchingProduct)
+        }
+      } catch (err) {
+        console.log(err)
+      } finally {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      }
     }
 
-    if (!isMongoId) {
-      setProduct(null)
-      setLoading(false)
-      return
-    }
+    loadProduct()
 
-    fetchProduct()
+    return () => {
+      cancelled = true
+    }
   }, [id, isMongoId, location.state])
-
-  const fetchProduct = async () => {
-    try {
-      const { data } = await API.get(`/products/${id}`)
-      setProduct(data)
-    } catch (err) {
-      console.log(err)
-    }
-    setLoading(false)
-  }
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
@@ -57,12 +78,17 @@ function ProductDetail() {
     </div>
   )
 
-  const cartItem = cartItems.find((item) => item._id === product._id)
+  const cartItem = cartItems.find((item) => item._id === product._id || normalizeName(item.name) === normalizeName(product.name))
+  const cartItemId = cartItem?._id || product._id
   const loved = isLoved(product._id)
-  const resolvedImage = resolveProductImage(product.name, product.imageURL)
+  const resolvedImage = resolveProductImage(product.name, product.imageURL || product.image)
   const hasDeal = Boolean(dealOffer?.discountedPrice)
   const effectivePrice = hasDeal ? Number(dealOffer.discountedPrice) : Number(product.price)
   const unitLabel = product.unit || inferProductUnit(product.name, product.category?.name)
+  const stockValue = Number(product.stock)
+  const hasStock = Number.isFinite(stockValue)
+  const isOutOfStock = hasStock && stockValue <= 0
+  const reachedStockLimit = hasStock && cartItem && cartItem.quantity >= stockValue
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-10 py-8">
@@ -118,9 +144,11 @@ function ProductDetail() {
             </div>
 
             <div className="flex items-center gap-2 mb-6">
-              <span className={`px-3 py-1 rounded-full text-xs font-medium ${product.stock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+              <span className={`px-3 py-1 rounded-full text-xs font-medium ${hasStock
+                ? (stockValue > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700')
+                : 'bg-gray-100 text-gray-600'
                 }`}>
-                {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+                {hasStock ? (stockValue > 0 ? `${stockValue} in stock` : 'Out of stock') : 'Stock updating'}
               </span>
             </div>
 
@@ -132,17 +160,19 @@ function ProductDetail() {
                     name: product.name,
                     price: effectivePrice,
                     unit: unitLabel,
-                    image: resolvedImage
+                    image: resolvedImage,
+                    ...(hasStock ? { stock: stockValue } : {})
                   })
                 }
-                className="bg-green-500 hover:bg-green-600 text-white py-3 px-8 rounded-xl font-semibold transition-colors w-fit"
+                disabled={isOutOfStock}
+                className="bg-green-500 hover:bg-green-600 text-white py-3 px-8 rounded-xl font-semibold transition-colors w-fit disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
-                + Add to Cart
+                {isOutOfStock ? 'Out of Stock' : '+ Add to Cart'}
               </button>
             ) : (
               <div className="flex items-center gap-4 bg-green-50 rounded-xl px-6 py-3 w-fit">
                 <button
-                  onClick={() => decreaseQty(product._id)}
+                  onClick={() => decreaseQty(cartItemId)}
                   className="text-green-600 font-bold text-xl hover:text-green-800"
                   aria-label={`Decrease quantity for ${product.name}`}
                 >
@@ -150,8 +180,9 @@ function ProductDetail() {
                 </button>
                 <span className="font-semibold text-green-700 text-lg">{cartItem.quantity}</span>
                 <button
-                  onClick={() => increaseQty(product._id)}
-                  className="text-green-600 font-bold text-xl hover:text-green-800"
+                  onClick={() => increaseQty(cartItemId)}
+                  disabled={reachedStockLimit}
+                  className="text-green-600 font-bold text-xl hover:text-green-800 disabled:text-gray-300 disabled:cursor-not-allowed"
                   aria-label={`Increase quantity for ${product.name}`}
                 >
                   +

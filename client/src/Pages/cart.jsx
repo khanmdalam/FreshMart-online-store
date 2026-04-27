@@ -1,9 +1,14 @@
+import { useEffect } from 'react'
 import { useCart } from '../context/useCart'
 import { Link } from 'react-router-dom'
 import { defaultProductImagePath, resolveProductImage } from '../utils/productImage'
 
 function Cart() {
-  const { cartItems, removeFromCart, increaseQty, decreaseQty, cartTotal, clearCart } = useCart()
+  const { cartItems, removeFromCart, increaseQty, decreaseQty, cartTotal, clearCart, refreshCartStock } = useCart()
+
+  useEffect(() => {
+    refreshCartStock()
+  }, [refreshCartStock])
 
   if (cartItems.length === 0) {
     return (
@@ -29,6 +34,9 @@ function Cart() {
         <div className="lg:col-span-2 space-y-4">
           {cartItems.map((item) => {
             const resolvedImage = resolveProductImage(item.name, item.image)
+            const stock = Number(item.stock)
+            const hasStock = Number.isFinite(stock)
+            const reachedStockLimit = hasStock && item.quantity >= stock
             return (
             <div key={item._id} className="bg-white rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-4 shadow-sm border border-gray-100">
               
@@ -49,6 +57,11 @@ function Cart() {
                 <p className="font-semibold text-gray-800">{item.name}</p>
                 <p className="text-sm text-gray-400">{item.unit}</p>
                 <p className="text-green-600 font-bold mt-1">₹{item.price}</p>
+                {hasStock && (
+                  <p className={`text-xs mt-1 ${stock > 0 ? 'text-green-600' : 'text-red-500'}`}>
+                    {stock > 0 ? `${stock} in stock` : 'Out of stock'}
+                  </p>
+                )}
               </div>
 
               {/* Quantity */}
@@ -63,7 +76,8 @@ function Cart() {
                 <span className="font-semibold text-green-700 w-6 text-center">{item.quantity}</span>
                 <button
                   onClick={() => increaseQty(item._id)}
-                  className="text-green-600 font-bold text-lg hover:text-green-800"
+                  disabled={reachedStockLimit}
+                  className="text-green-600 font-bold text-lg hover:text-green-800 disabled:text-gray-300 disabled:cursor-not-allowed"
                   aria-label={`Increase quantity for ${item.name}`}
                 >
                   +

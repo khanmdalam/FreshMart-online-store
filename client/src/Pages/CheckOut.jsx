@@ -9,7 +9,7 @@ const PINCODE_REGEX = /^\d+$/
 const sanitizePincode = (value) => String(value || '').replace(/\D/g, '')
 
 function Checkout() {
-  const { cartItems, cartTotal, clearCart } = useCart()
+  const { cartItems, cartTotal, clearCart, refreshCartStock } = useCart()
   const { user } = useAuth()
   const navigate = useNavigate()
 
@@ -62,9 +62,30 @@ function Checkout() {
     setError('')
 
     try {
+      const latestCartItems = await refreshCartStock()
+      const orderItems = latestCartItems.length > 0 ? latestCartItems : cartItems
+      const unavailableItem = orderItems.find((item) => Number.isFinite(Number(item.stock)) && Number(item.stock) <= 0)
+      const exceededStockItem = orderItems.find((item) => {
+        const stock = Number(item.stock)
+        return Number.isFinite(stock) && stock > 0 && item.quantity > stock
+      })
+      const orderTotal = orderItems.reduce((acc, item) => acc + (Number(item.price) || 0) * item.quantity, 0)
+
+      if (unavailableItem) {
+        setError(`${unavailableItem.name} is out of stock`)
+        setLoading(false)
+        return
+      }
+
+      if (exceededStockItem) {
+        setError(`Only ${exceededStockItem.stock} ${exceededStockItem.name} available in stock`)
+        setLoading(false)
+        return
+      }
+
       // Step 1 — Create Razorpay order from backend
       const { data } = await API.post('/payment/create-order', {
-        amount: cartTotal
+        amount: orderTotal
       })
 
       // Step 2 — Open Razorpay checkout
@@ -87,7 +108,7 @@ function Checkout() {
             if (verifyData.success) {
               // Step 4 — Save order in database after payment verification
               await API.post('/orders', {
-                items: cartItems.map((item) => ({
+                items: orderItems.map((item) => ({
                   product: item._id,
                   quantity: item.quantity,
                   price: item.price,

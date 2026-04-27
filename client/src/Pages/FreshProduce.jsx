@@ -56,7 +56,9 @@ function FreshProduce() {
       name: p.name,
       price: p.price,
       unit: p.unit || inferProductUnit(p.name, p.category?.name),
-      image: p.imageURL
+      image: p.imageURL,
+      stock: p.stock,
+      description: p.description
     }))
 
     const mappedFruits = fruits.map((p) => ({
@@ -64,7 +66,9 @@ function FreshProduce() {
       name: p.name,
       price: p.price,
       unit: p.unit || inferProductUnit(p.name, p.category?.name),
-      image: p.imageURL
+      image: p.imageURL,
+      stock: p.stock,
+      description: p.description
     }))
 
     return {
@@ -138,6 +142,8 @@ function FreshProduce() {
               unit={product.unit}
               image={product.image}
               categoryName={activeTab === 'vegetables' ? 'Fresh Vegetables' : 'Fruits'}
+              stock={product.stock}
+              description={product.description}
             />
           ))}
         </div>

@@ -112,6 +112,15 @@ function Shop() {
     setLoading(false)
   }
 
+  const fetchCategories = async () => {
+    try {
+      const { data } = await API.get('/categories')
+      setCategories(data)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   useEffect(() => {
     fetchProducts()
     fetchCategories()
@@ -206,15 +215,6 @@ function Shop() {
 
     setFiltered(result)
   }, [products, categories, staticCatalog, activeCategory, activeCategoryName, sortBy, search, selectedMaxPrice])
-
-  const fetchCategories = async () => {
-    try {
-      const { data } = await API.get('/categories')
-      setCategories(data)
-    } catch (err) {
-      console.log(err)
-    }
-  }
 
   const updateUrlParams = (nextSearch, nextCategory) => {
     const params = {}
@@ -440,6 +440,8 @@ function Shop() {
                     unit={unit}
                     image={product.imageURL}
                     categoryName={product.category?.name}
+                    stock={product.stock}
+                    description={product.description}
                   />
                   )
                 })}

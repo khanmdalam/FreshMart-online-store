@@ -42,31 +42,38 @@ const createOrder = async (req, res) => {
     for (let item of items) {
       const quantity = Number(item.quantity) || 1;
       const clientPrice = Number(item.price) || 0;
+      const itemName = String(item.name || item.productName || "").trim();
       let savedItem = {
         quantity,
         price: clientPrice,
-        productName: item.name || "Product",
+        productName: itemName || "Product",
         productImage: item.image || item.imageURL || "",
       };
+      let product = null;
 
       if (item.product && mongoose.Types.ObjectId.isValid(item.product)) {
-        const product = await Product.findById(item.product);
-        if (product) {
-          if (product.stock < quantity) {
-            return res.status(400).json({ message: `${product.name} is out of stock` });
-          }
+        product = await Product.findById(item.product);
+      }
 
-          product.stock -= quantity;
-          await product.save();
+      if (!product && itemName) {
+        product = await Product.findOne({ name: itemName });
+      }
 
-          savedItem = {
-            ...savedItem,
-            product: product._id,
-            productName: product.name,
-            productImage: product.imageURL,
-            price: product.price,
-          };
+      if (product) {
+        if (product.stock < quantity) {
+          return res.status(400).json({ message: `${product.name} is out of stock` });
         }
+
+        product.stock -= quantity;
+        await product.save();
+
+        savedItem = {
+          ...savedItem,
+          product: product._id,
+          productName: product.name,
+          productImage: product.imageURL,
+          price: product.price,
+        };
       }
 
       totalAmount += savedItem.price * quantity;

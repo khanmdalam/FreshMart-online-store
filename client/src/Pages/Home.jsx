@@ -88,6 +88,8 @@ function Home() {
                   unit={unit}
                   image={product.imageURL}
                   categoryName={product.category?.name}
+                  stock={product.stock}
+                  description={product.description}
                 />
                 )
               })}
