@@ -1,4 +1,7 @@
 const Product = require("../models/product");
+const mongoose = require("mongoose");
+
+const escapeRegex = (value) => String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 // GET ALL PRODUCTS
 const getProducts = async (req, res) => {
@@ -23,10 +26,36 @@ const getProductsByCategory = async (req, res) => {
 // GET SINGLE PRODUCT
 const getProductById = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
     const product = await Product.findById(req.params.id).populate("category");
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
+    res.status(200).json(product);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// GET PRODUCT BY EXACT NAME
+const getProductByName = async (req, res) => {
+  try {
+    const name = String(req.query.name || "").trim();
+    if (!name) {
+      return res.status(400).json({ message: "Product name is required" });
+    }
+
+    const product = await Product.findOne({
+      name: new RegExp(`^${escapeRegex(name)}$`, "i"),
+    }).populate("category");
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
     res.status(200).json(product);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -82,6 +111,7 @@ module.exports = {
   getProducts,
   getProductsByCategory,
   getProductById,
+  getProductByName,
   createProduct,
   deleteProduct,
 };

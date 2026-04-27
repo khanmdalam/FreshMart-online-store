@@ -45,6 +45,16 @@ function ProductDetail() {
           return
         }
 
+        try {
+          const { data } = await API.get(`/products/lookup?name=${encodeURIComponent(snapshot?.name || '')}`)
+          if (!cancelled) {
+            setProduct(data)
+          }
+          return
+        } catch {
+          // Older deployed backends may not have the lookup route yet, so fall back to the full list.
+        }
+
         const { data } = await API.get('/products')
         const matchingProduct = data.find((product) => normalizeName(product.name) === normalizeName(snapshot?.name))
         if (!cancelled && matchingProduct) {
@@ -143,14 +153,14 @@ function ProductDetail() {
               <span className="text-gray-400 text-sm">{unitLabel}</span>
             </div>
 
-            <div className="flex items-center gap-2 mb-6">
-              <span className={`px-3 py-1 rounded-full text-xs font-medium ${hasStock
-                ? (stockValue > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700')
-                : 'bg-gray-100 text-gray-600'
-                }`}>
-                {hasStock ? (stockValue > 0 ? `${stockValue} in stock` : 'Out of stock') : 'Stock updating'}
-              </span>
-            </div>
+            {hasStock && (
+              <div className="flex items-center gap-2 mb-6">
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${stockValue > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                  }`}>
+                  {stockValue > 0 ? `${stockValue} in stock` : 'Out of stock'}
+                </span>
+              </div>
+            )}
 
             {!cartItem ? (
               <button

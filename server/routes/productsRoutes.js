@@ -4,6 +4,7 @@ const {
   getProducts,
   getProductsByCategory,
   getProductById,
+  getProductByName,
   createProduct,
   deleteProduct,
 } = require("../controllers/productControllers");
@@ -12,6 +13,7 @@ const { requireDatabase } = require("../middleware/dbMiddleware");
 
 // PUBLIC ROUTES
 router.get("/", requireDatabase, getProducts);
+router.get("/lookup", requireDatabase, getProductByName);
 router.get("/category/:categoryId", requireDatabase, getProductsByCategory);
 router.get("/:id", requireDatabase, getProductById);
 
