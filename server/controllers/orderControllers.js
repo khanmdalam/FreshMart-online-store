@@ -2,6 +2,15 @@ const Order = require("../models/order");
 const Product = require("../models/product");
 const mongoose = require("mongoose");
 
+const PINCODE_REGEX = /^\d+$/;
+
+const normalizeDeliveryAddress = (deliveryAddress = {}) => ({
+  street: String(deliveryAddress.street || "").trim(),
+  city: String(deliveryAddress.city || "").trim(),
+  state: String(deliveryAddress.state || "").trim(),
+  pincode: String(deliveryAddress.pincode || "").trim(),
+});
+
 // CREATE ORDER
 const createOrder = async (req, res) => {
   try {
@@ -9,6 +18,20 @@ const createOrder = async (req, res) => {
 
     if (!items || items.length === 0) {
       return res.status(400).json({ message: "No items in order" });
+    }
+
+    const normalizedDeliveryAddress = normalizeDeliveryAddress(deliveryAddress);
+    if (
+      !normalizedDeliveryAddress.street ||
+      !normalizedDeliveryAddress.city ||
+      !normalizedDeliveryAddress.state ||
+      !normalizedDeliveryAddress.pincode
+    ) {
+      return res.status(400).json({ message: "Delivery address is required" });
+    }
+
+    if (!PINCODE_REGEX.test(normalizedDeliveryAddress.pincode)) {
+      return res.status(400).json({ message: "Pincode should contain numbers only" });
     }
 
     // Calculate total and check stock for DB-backed products.
@@ -54,7 +77,7 @@ const createOrder = async (req, res) => {
       user: req.user._id,
       items: normalizedItems,
       totalAmount,
-      deliveryAddress,
+      deliveryAddress: normalizedDeliveryAddress,
       statusTimeline: [
         { status: "pending", changedAt: new Date() }
       ],

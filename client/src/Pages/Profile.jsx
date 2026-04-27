@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 
+const PINCODE_REGEX = /^\d+$/
+const sanitizePincode = (value) => String(value || '').replace(/\D/g, '')
+
 const emptyAddress = {
   street: '',
   city: '',
@@ -9,12 +12,19 @@ const emptyAddress = {
   pincode: '',
 }
 
+const normalizeAddress = (address = emptyAddress) => ({
+  street: address?.street || '',
+  city: address?.city || '',
+  state: address?.state || '',
+  pincode: sanitizePincode(address?.pincode),
+})
+
 function Profile() {
   const { user, refreshProfile, updateProfile, mergeUserState } = useAuth()
   const [name, setName] = useState(user?.name || '')
   const [gender, setGender] = useState(user?.gender || 'male')
   const [avatar, setAvatar] = useState(user?.avatar || '')
-  const [address, setAddress] = useState(user?.address || emptyAddress)
+  const [address, setAddress] = useState(normalizeAddress(user?.address))
   const [loadingProfile, setLoadingProfile] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -32,12 +42,7 @@ function Profile() {
         setName(profile?.name || '')
         setGender(profile?.gender || 'male')
         setAvatar(profile?.avatar || '')
-        setAddress({
-          street: profile?.address?.street || '',
-          city: profile?.address?.city || '',
-          state: profile?.address?.state || '',
-          pincode: profile?.address?.pincode || '',
-        })
+        setAddress(normalizeAddress(profile?.address))
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load profile')
       } finally {
@@ -50,7 +55,11 @@ function Profile() {
   }, [user?._id])
 
   const handleAddressChange = (e) => {
-    setAddress((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+    const { name, value } = e.target
+    setAddress((prev) => ({
+      ...prev,
+      [name]: name === 'pincode' ? sanitizePincode(value) : value
+    }))
   }
 
   const handleAvatarChange = (e) => {
@@ -89,14 +98,27 @@ function Profile() {
       return
     }
 
+    const normalizedAddress = {
+      street: address.street.trim(),
+      city: address.city.trim(),
+      state: address.state.trim(),
+      pincode: sanitizePincode(address.pincode),
+    }
+
+    if (normalizedAddress.pincode && !PINCODE_REGEX.test(normalizedAddress.pincode)) {
+      setError('Pincode should contain numbers only')
+      return
+    }
+
     setSaving(true)
     try {
       await updateProfile({
         name: name.trim(),
         gender,
         avatar,
-        address,
+        address: normalizedAddress,
       })
+      setAddress(normalizedAddress)
       setSuccess('Profile updated successfully')
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update profile')
@@ -242,6 +264,8 @@ function Profile() {
             <label className="text-sm text-gray-600 mb-1 block">Pincode</label>
             <input
               type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               name="pincode"
               value={address.pincode}
               onChange={handleAddressChange}

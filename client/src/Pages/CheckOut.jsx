@@ -5,6 +5,9 @@ import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
 import { resolveProductImage } from '../utils/productImage'
 
+const PINCODE_REGEX = /^\d+$/
+const sanitizePincode = (value) => String(value || '').replace(/\D/g, '')
+
 function Checkout() {
   const { cartItems, cartTotal, clearCart } = useCart()
   const { user } = useAuth()
@@ -20,7 +23,11 @@ function Checkout() {
   const [error, setError] = useState('')
 
   const handleChange = (e) => {
-    setAddress({ ...address, [e.target.name]: e.target.value })
+    const { name, value } = e.target
+    setAddress({
+      ...address,
+      [name]: name === 'pincode' ? sanitizePincode(value) : value
+    })
   }
 
   const handleOrder = async () => {
@@ -34,8 +41,20 @@ function Checkout() {
       return
     }
 
-    if (!address.street || !address.city || !address.state || !address.pincode) {
+    const deliveryAddress = {
+      street: address.street.trim(),
+      city: address.city.trim(),
+      state: address.state.trim(),
+      pincode: sanitizePincode(address.pincode)
+    }
+
+    if (!deliveryAddress.street || !deliveryAddress.city || !deliveryAddress.state || !deliveryAddress.pincode) {
       setError('Please fill in all address fields')
+      return
+    }
+
+    if (!PINCODE_REGEX.test(deliveryAddress.pincode)) {
+      setError('Pincode should contain numbers only')
       return
     }
 
@@ -75,7 +94,7 @@ function Checkout() {
                   name: item.name,
                   image: resolveProductImage(item.name, item.image)
                 })),
-                deliveryAddress: address
+                deliveryAddress
               })
 
               clearCart()
@@ -176,6 +195,8 @@ function Checkout() {
                 <label className="text-sm text-gray-600 mb-1 block">Pincode</label>
                 <input
                   type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   name="pincode"
                   placeholder=""
                   value={address.pincode}

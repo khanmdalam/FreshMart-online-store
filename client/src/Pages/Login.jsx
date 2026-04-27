@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+
 function Login() {
   const [isLogin, setIsLogin] = useState(true)
   const [form, setForm] = useState({ name: '', email: '', password: '', gender: 'male' })
@@ -17,18 +19,37 @@ function Login() {
 
   const handleSubmit = async () => {
     setError('')
+    const email = form.email.trim().toLowerCase()
+    const name = form.name.trim()
+
+    if (!EMAIL_REGEX.test(email)) {
+      setError('Please enter a valid email address')
+      return
+    }
+
+    if (!isLogin && !name) {
+      setError('Please enter your full name')
+      return
+    }
+
+    if (!form.password) {
+      setError('Please enter your password')
+      return
+    }
+
     setLoading(true)
     try {
       if (isLogin) {
-        await login(form.email, form.password)
+        await login(email, form.password)
       } else {
-        await register(form.name, form.email, form.password, form.gender)
+        await register(name, email, form.password, form.gender)
       }
       navigate('/')
     } catch (err) {
       setError(err.response?.data?.message || 'Something went wrong')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   return (

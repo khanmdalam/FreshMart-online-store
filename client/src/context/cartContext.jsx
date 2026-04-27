@@ -1,9 +1,31 @@
-import { createContext, useState } from 'react'
+import { createContext, useEffect, useState } from 'react'
 
 const CartContext = createContext()
+const STORAGE_KEY = 'freshmart_cart'
+
+const getInitialCartItems = () => {
+  try {
+    const storedCart = localStorage.getItem(STORAGE_KEY)
+    if (!storedCart) return []
+
+    const parsedCart = JSON.parse(storedCart)
+    return Array.isArray(parsedCart) ? parsedCart : []
+  } catch (error) {
+    console.log(error)
+    return []
+  }
+}
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([])
+  const [cartItems, setCartItems] = useState(getInitialCartItems)
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cartItems))
+    } catch (error) {
+      console.log(error)
+    }
+  }, [cartItems])
 
   // Add to cart
   const addToCart = (product) => {

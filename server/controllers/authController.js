@@ -2,6 +2,17 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const PINCODE_REGEX = /^\d+$/;
+
+const normalizeEmail = (email) => String(email || "").trim().toLowerCase();
+
+const isValidEmail = (email) => (
+  email.length <= 254 && EMAIL_REGEX.test(email)
+);
+
+const normalizePincode = (pincode) => String(pincode || "").trim();
+
 const toUserResponse = (user, token = null) => {
   const response = {
     _id: user._id,
@@ -24,19 +35,25 @@ const toUserResponse = (user, token = null) => {
 const registerUser = async (req, res) => {
   try {
     const { name, email, password, gender } = req.body;
+    const normalizedName = String(name || "").trim();
+    const normalizedEmail = normalizeEmail(email);
     const normalizedGender = String(gender || "").trim().toLowerCase();
 
-    if (!name || !email || !password || !normalizedGender) {
+    if (!normalizedName || !normalizedEmail || !password || !normalizedGender) {
       return res.status(400).json({
         message: "name, email, password and gender are required",
       });
+    }
+
+    if (!isValidEmail(normalizedEmail)) {
+      return res.status(400).json({ message: "Please enter a valid email address" });
     }
 
     if (!["male", "female"].includes(normalizedGender)) {
       return res.status(400).json({ message: "Gender must be male or female" });
     }
 
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ email: normalizedEmail });
     if (userExists) {
       return res.status(400).json({ message: "User already exists" });
     }
@@ -45,8 +62,8 @@ const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = await User.create({
-      name,
-      email,
+      name: normalizedName,
+      email: normalizedEmail,
       gender: normalizedGender,
       password: hashedPassword,
     });
@@ -68,21 +85,26 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+    const normalizedEmail = normalizeEmail(email);
 
-    if (!email || !password) {
+    if (!normalizedEmail || !password) {
       return res.status(400).json({
         message: "email and password are required",
       });
     }
 
-    const foundUser = await User.findOne({ email });
+    if (!isValidEmail(normalizedEmail)) {
+      return res.status(400).json({ message: "Please enter a valid email address" });
+    }
+
+    const foundUser = await User.findOne({ email: normalizedEmail });
     if (!foundUser) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Email is not registered" });
     }
 
     const isMatch = await bcrypt.compare(password, foundUser.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
     const token = jwt.sign(
@@ -131,13 +153,18 @@ const updateProfile = async (req, res) => {
       return res.status(400).json({ message: "Gender must be male or female" });
     }
 
+    const normalizedPincode = normalizePincode(address?.pincode);
+    if (normalizedPincode && !PINCODE_REGEX.test(normalizedPincode)) {
+      return res.status(400).json({ message: "Pincode should contain numbers only" });
+    }
+
     user.name = name.trim();
     user.gender = normalizedGender;
     user.address = {
       street: address?.street?.trim() || "",
       city: address?.city?.trim() || "",
       state: address?.state?.trim() || "",
-      pincode: address?.pincode?.trim() || "",
+      pincode: normalizedPincode,
     };
     user.avatar = typeof avatar === "string" ? avatar : user.avatar || "";
 

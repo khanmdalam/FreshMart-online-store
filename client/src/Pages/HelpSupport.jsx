@@ -9,7 +9,7 @@ function HelpSupport() {
           <h2 className="text-xl font-semibold text-gray-800 mb-3">Contact Support</h2>
           <div className="space-y-2 text-sm text-gray-600">
             <p>📧 Email: support@freshmart.com</p>
-            <p>📞 Phone: +91 8294224590</p>
+            <p>📞 Phone: +91 82XXXXX20</p>
             <p>🕒 Hours: 8:00 AM - 10:00 PM (IST)</p>
           </div>
         </section>
