@@ -14,6 +14,7 @@ const fallbackCategories = [
   { name: 'Bakery', image: productImageAssetPath('bakery.webp') },
   { name: 'Meat & Fish', image: productImageAssetPath('meat-fish.webp') },
   { name: 'Beverages', image: productImageAssetPath('beverages.webp') },
+  
 ]
 
 const fallbackCountByCategory = {

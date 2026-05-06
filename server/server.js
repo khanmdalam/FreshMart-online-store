@@ -58,6 +58,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/payment", paymentRoutes);
 
+
 // Error handling
 app.use(notFound);
 app.use(errorHandler);
@@ -66,7 +67,6 @@ app.use(errorHandler);
 const startServer = async () => {
   try {
     await connectDB();
-    console.log("MongoDB connected");
   } catch (error) {
     console.error("MongoDB connection failed:", error.message);
     console.error("Server will continue running, but DB routes may fail.");

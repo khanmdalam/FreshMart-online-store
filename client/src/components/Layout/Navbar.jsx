@@ -99,8 +99,9 @@ function Navbar() {
       <div className="flex flex-col gap-2 px-4 sm:px-6 lg:px-10 py-3 bg-white border-b border-gray-200 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-center">
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 lg:min-w-0">
-          <div className="flex items-center gap-2 text-sm text-gray-600 self-start">
-            <span>🇮🇳India</span>
+          <div className="flex items-center gap-2 text-sm text-gray-600 self-start"> 
+            <img src="https://flagcdn.com/w40/in.png" alt="India Flag" className="w-5 h-5 object-cover rounded-sm" />
+            <span>India</span>
           </div>
 
           <form onSubmit={handleSearch} className="flex items-center w-full lg:max-w-md bg-gray-100 rounded-full px-4 py-2 gap-2">
@@ -116,13 +117,15 @@ function Navbar() {
             />
           </form>
         </div>
+        
 
-        <Link
+         <Link
           to="/"
           className="text-xl sm:text-2xl font-bold text-gray-800 self-center lg:justify-self-center"
         >
           FreshMart
-        </Link>
+        </Link> 
+
 
         <div className="flex items-center justify-between sm:justify-start gap-3 sm:gap-6 text-sm text-gray-700 w-full lg:w-auto lg:justify-self-end lg:justify-end">
           <Link to="/cart" className="flex items-center gap-1 hover:text-green-600">

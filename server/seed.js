@@ -3,6 +3,8 @@ const dotenv = require('dotenv')
 dotenv.config()
 const Product = require('./models/product')
 const Category = require('./models/category')
+const User = require('./models/User')
+const Order = require('./models/order')
 
 const seedData = async () => {
   try {
@@ -12,6 +14,8 @@ const seedData = async () => {
     // Clear existing data
     await Product.deleteMany()
     await Category.deleteMany()
+    await User.deleteMany()
+    await Order.deleteMany()
     console.log('Cleared existing data')
 
     // Create categories
@@ -60,7 +64,7 @@ const seedData = async () => {
       { name: 'Paneer', price: 90, unit: 'per 200g', stock: 50, category: dairy, imageURL: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=400', description: 'Fresh homemade paneer' },
       { name: 'Butter', price: 55, unit: 'per 100g', stock: 80, category: dairy, imageURL: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=400', description: 'Fresh farm butter' },
       { name: 'Curd', price: 80, unit: 'per 500g', stock: 100, category: dairy, imageURL: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400', description: 'Fresh homemade curd' },
-
+      
       // Bakery
       { name: 'Whole Wheat Bread', price: 45, unit: 'per loaf', stock: 60, category: bakery, imageURL: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400', description: 'Freshly baked whole wheat bread' },
       { name: 'Croissant', price: 30, unit: 'per piece', stock: 40, category: bakery, imageURL: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400', description: 'Buttery fresh croissant' },
@@ -89,6 +93,125 @@ const seedData = async () => {
 
 
     console.log('Products created')
+
+    // Create sample users
+    const users = await User.insertMany([
+      {
+        name: 'Ansari User',
+        email: 'user@freshmart.com',
+        password: 'password123',
+        address: {
+          street: '123 Main St',
+          city: 'Mumbai',
+          state: 'Maharashtra',
+          pincode: '400001'
+        },
+        gender: 'male',
+        role: 'customer'
+      },
+      {
+        name: 'Admin User',
+        email: 'admin@freshmart.com',
+        password: 'admin123',
+        address: {
+          street: '456 Admin Ave',
+          city: 'Delhi',
+          state: 'Delhi',
+          pincode: '110001'
+        },
+        gender: 'male',
+        role: 'admin'
+      },
+      {
+        name: 'Test Customer',
+        email: 'customer@freshmart.com',
+        password: 'customer123',
+        address: {
+          street: '789 Customer St',
+          city: 'Bangalore',
+          state: 'Karnataka',
+          pincode: '560001'
+        },
+        gender: 'female',
+        role: 'customer'
+      }
+
+    ])
+
+    console.log('Users created')
+
+    // Create sample orders
+    const orders = await Order.insertMany([
+      {
+        user: users[0]._id,
+        items: [
+          {
+            product: null,
+            productName: 'Organic Spinach',
+            productImage: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400',
+            quantity: 2,
+            price: 40
+          },
+          {
+            product: null,
+            productName: 'Fresh Apple',
+            productImage: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400',
+            quantity: 1,
+            price: 120
+          }
+        ],
+        totalAmount: 200,
+        deliveryAddress: {
+          street: '123 Main St',
+          city: 'Mumbai',
+          state: 'Maharashtra',
+          pincode: '400001'
+        },
+        status: 'delivered'
+      },
+      {
+        user: users[2]._id,
+        items: [
+          {
+            product: null,
+            productName: 'Fresh Chicken',
+            productImage: 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400',
+            quantity: 1,
+            price: 200
+          }
+        ],
+        totalAmount: 200,
+        deliveryAddress: {
+          street: '789 Customer St',
+          city: 'Bangalore',
+          state: 'Karnataka',
+          pincode: '560001'
+        },
+        status: 'shipped'
+      },
+      {
+        user: users[0]._id,
+        items: [
+          {
+            product: null,
+            productName: 'Fresh Whole Milk',
+            productImage: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400',
+            quantity: 2,
+            price: 60
+          }
+        ],
+        totalAmount: 120,
+        deliveryAddress: {
+          street: '123 Main St',
+          city: 'Mumbai',
+          state: 'Maharashtra',
+          pincode: '400001'
+        },
+        status: 'processing'
+      }
+    ])
+
+    console.log('Orders created')
     console.log('✅ Database seeded successfully!')
     process.exit()
 

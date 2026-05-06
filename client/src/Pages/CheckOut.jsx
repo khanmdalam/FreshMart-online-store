@@ -90,7 +90,8 @@ function Checkout() {
 
       // Step 2 — Open Razorpay checkout
       const options = {
-        key: "rzp_test_SZRLIo68x3LcDG",
+       // key: "rzp_test_SZRLIo68x3LcDG",
+       key:"rzp_test_SkE5ugk0Uspezi",
         amount: data.amount,
         currency: 'INR',
         name: 'FreshMart',
