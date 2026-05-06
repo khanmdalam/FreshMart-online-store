@@ -211,7 +211,7 @@ RAZORPAY_KEY_SECRET=your_razorpay_key_secret
 The current Axios client points to the hosted API:
 
 ```js
-baseURL: 'https://freshmart-0the.onrender.com/api'
+baseURL: 'https://freshmart-online-store.onrender.com/api'
 ```
 
 For local backend development, update `client/src/services/api.js` to:
@@ -612,4 +612,4 @@ The server currently allows broad CORS access. For production, restrict CORS to 
 
 ## Author
 
-Built by Raja.
+Built by Noor Alam.
