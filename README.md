@@ -558,7 +558,7 @@ To access admin pages, update a user role to `admin` in MongoDB. Example MongoDB
 
 ```js
 db.users.updateOne(
-  { email: "raja@example.com" },
+  { email: "Noor@example.com" },
   { $set: { role: "admin" } }
 )
 ```
