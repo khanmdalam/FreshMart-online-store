@@ -360,8 +360,8 @@ Register body:
 
 ```json
 {
-  "name": "Raja",
-  "email": "raja@example.com",
+  "name": "Noor",
+  "email": "Noor@example.com",
   "password": "password123",
   "gender": "male"
 }
@@ -371,7 +371,7 @@ Login body:
 
 ```json
 {
-  "email": "raja@example.com",
+  "email": "Noor@example.com",
   "password": "password123"
 }
 ```
